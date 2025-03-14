@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        :root {
+            --bg-color: white;
+            --text-color: #333;
+            --secondary-text: #666;
+            --input-border: #ddd;
+            --timer-bg: #f5f5f5;
+        }
+
+        .dark-mode {
+            --bg-color: #1a1a1a;
+            --text-color: #fff;
+            --secondary-text: #aaa;
+            --input-border: #444;
+            --timer-bg: #2a2a2a;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            padding: 40px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .timer-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 30px;
+        }
+
+        .progress-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .timer-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            font-family: monospace;
+            z-index: 1;
+            color: var(--text-color);
+        }
+
+        .time-inputs {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 40px 0;
+        }
+
+        .time-input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 12px;
+            border: 2px solid var(--input-border);
+            border-radius: 6px;
+            text-align: center;
+            font-size: 20px;
+            transition: border-color 0.3s;
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            opacity: 1;
+            height: 30px;
+        }
+
+        label {
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        #startBtn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #pauseBtn {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        #resetBtn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" id="themeToggle">🌓</div>
+    <div class="container">
+        <div class="timer-container">
+            <svg class="progress-ring" width="300" height="300">
+                <circle
+                    class="progress-ring-circle"
+                    stroke="#4CAF50"
+                    stroke-width="8"
+                    fill="transparent"
+                    r="140"
+                    cx="150"
+                    cy="150"
+                    style="transition: stroke-dashoffset 0.3s ease"
+                />
+            </svg>
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+        </div>
+        <div class="time-inputs">
+            <div class="time-input-group">
+                <input type="number" id="hours" min="0" max="23" value="0">
+                <label>Hours</label>
+            </div>
+            <div class="time-input-group">
+                <input type="number" id="minutes" min="0" max="59" value="0">
+                <label>Minutes</label>
+            </div>
+            <div class="time-input-group">
+                <input type="number" id="seconds" min="0" max="59" value="0">
+                <label>Seconds</label>
+            </div>
+        </div>
+        <div class="buttons">
+            <button id="startBtn">Start</button>
+            <button id="pauseBtn">Pause</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
