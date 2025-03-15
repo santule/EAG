@@ -1,163 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Timer Extension</title>
     <style>
-        :root {
-            --bg-color: white;
-            --text-color: #333;
-            --secondary-text: #666;
-            --input-border: #ddd;
-            --timer-bg: #f5f5f5;
-            --sand-colors: #FF1744, #FF4081, #AA00FF, #2979FF, #00E5FF, #1DE9B6, #00E676, #FFEA00, #FF3D00;
-        }
-
-        .dark-mode {
-            --bg-color: #1a1a1a;
-            --text-color: #fff;
-            --secondary-text: #aaa;
-            --input-border: #444;
-            --timer-bg: #2a2a2a;
-            --sand-colors: #FF1744, #FF4081, #AA00FF, #2979FF, #00E5FF, #1DE9B6, #00E676, #FFEA00, #FF3D00;
-        }
-
-        html, body {
-            min-width: 400px; /* Set minimum width for the popup */
-            width: 100%;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-        }
-
         body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            padding: 20px;
-            overflow: auto;
-        }
-
-        .container {
-            width: 100%;
-            min-width: 350px;
-            padding: 0 10px;
-            box-sizing: border-box;
-        }
-
-        .timer-container {
-            position: relative;
-            width: 250px;
-            height: 250px;
-            margin: 0 auto 20px;
-        }
-
-        .progress-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .timer-display {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.5em;
-            font-weight: bold;
-            color: var(--text-color);
-        }
-
-        .time-inputs {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .time-input-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        input[type="number"] {
-            width: 70px;
-            padding: 8px;
-            border: 2px solid var(--input-border);
-            border-radius: 6px;
+            width: 200px;
+            padding: 10px;
             text-align: center;
-            font-size: 18px;
         }
-
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            width: 100%;
-            margin-top: 15px;
-        }
-
         button {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #4CAF50;
+            color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <canvas id="sandCanvas"></canvas>
-    <div class="theme-toggle" id="themeToggle">🌓</div>
-    <div class="container">
-        <div class="timer-container">
-            <svg class="progress-ring" width="240" height="240">
-                <circle
-                    class="progress-ring-circle"
-                    stroke="#4CAF50"
-                    stroke-width="8"
-                    fill="transparent"
-                    r="112"
-                    cx="120"
-                    cy="120"
-                    style="transition: stroke-dashoffset 0.3s ease"
-                />
-            </svg>
-            <div class="timer-display" id="timerDisplay">00:00:00</div>
-        </div>
-        <div class="time-inputs">
-            <div class="time-input-group">
-                <input type="number" id="hours" min="0" max="23" value="0">
-                <label>Hours</label>
-            </div>
-            <div class="time-input-group">
-                <input type="number" id="minutes" min="0" max="59" value="0">
-                <label>Minutes</label>
-            </div>
-            <div class="time-input-group">
-                <input type="number" id="seconds" min="0" max="59" value="0">
-                <label>Seconds</label>
-            </div>
-        </div>
-        <div class="buttons">
-            <button id="startBtn">Start</button>
-            <button id="pauseBtn">Pause</button>
-            <button id="resetBtn">Reset</button>
-        </div>
-    </div>
-    <script src="sand.js"></script>
+    <h2>Timer Extension</h2>
+    <button id="openTimer">Open Timer</button>
     <script src="popup.js"></script>
 </body>
 </html>

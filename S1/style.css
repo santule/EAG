@@ -17,14 +17,12 @@
 }
 
 html, body {
-    width: 100%;
-    height: 100vh;
     margin: 0;
     padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     font-family: Arial, sans-serif;
-    background: var(--bg-color);
-    color: var(--text-color);
-    transition: all 0.3s ease;
 }
 
 body {
@@ -36,46 +34,75 @@ body {
     user-select: none;
     -webkit-user-select: none;
     padding: 20px;
-    overflow: auto;
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    background: white;
 }
 
 .container {
-    width: 100%;
-    max-width: 400px;
-    padding: 0 10px;
+    position: relative;
+    width: 500px;
+    height: 700px;
+    margin: 0;
+    padding: 20px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#sandCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 500px;
+    height: 700px;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .timer-container {
     position: relative;
-    width: 250px;
-    height: 250px;
-    margin: 0 auto 20px;
-}
-
-.progress-ring {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    z-index: 1;
 }
 
 .timer-display {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2.5em;
+    font-size: 3em;
     font-weight: bold;
-    color: var(--text-color);
+    color: #333;
+    text-align: center;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.progress-ring {
+    width: 300px;
+    height: 300px;
+    transform: rotate(-90deg);
+    z-index: 1;
+}
+
+.progress-ring-circle {
+    transition: stroke-dashoffset 0.3s ease;
 }
 
 .time-inputs {
     display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin: 20px 0;
-    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 30px;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 20px;
+    border-radius: 12px;
 }
 
 .time-input-group {
@@ -84,30 +111,59 @@ body {
     align-items: center;
 }
 
-input[type="number"] {
-    width: 70px;
-    padding: 8px;
-    border: 2px solid var(--input-border);
-    border-radius: 6px;
+.time-input-group input {
+    width: 80px;
+    padding: 12px;
     text-align: center;
-    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    background: white;
+    font-size: 1.2em;
+}
+
+.time-input-group label {
+    font-size: 1.1em;
+    color: #666;
 }
 
 .buttons {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    width: 100%;
-    margin-top: 15px;
+    gap: 20px;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 15px;
+    border-radius: 12px;
 }
 
 button {
-    width: 100%;
-    padding: 12px;
+    padding: 15px 30px;
     border: none;
     border-radius: 6px;
+    color: white;
     cursor: pointer;
-    font-size: 16px;
+    transition: background-color 0.3s;
     font-weight: bold;
-    transition: all 0.3s ease;
+    font-size: 1.1em;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#startBtn {
+    background-color: #4CAF50;
+}
+
+#pauseBtn {
+    background-color: #ff9800;
+}
+
+#resetBtn {
+    background-color: #f44336;
 }

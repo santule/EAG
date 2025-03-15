@@ -1,14 +1,16 @@
 {
     "manifest_version": 3,
-    "name": "Simple Timer Extension",
+    "name": "Timer with Sand Animation",
     "version": "1.0",
-    "description": "A simple timer extension",
-    "permissions": ["scripting", "storage", "windows", "windows"],
-    "host_permissions": ["http://*/*", "https://*/*"],
+    "description": "A timer with beautiful flowing sand animation",
+    "permissions": ["scripting", "storage", "windows"],
     "background": {
-      "service_worker": "background.js"
+        "service_worker": "background.js"
     },
     "action": {
-      "default_title": "Timer"
+        "default_title": "Timer with Sand"
+    },
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'"
     }
 }
