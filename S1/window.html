@@ -5,20 +5,18 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="sandCanvas"></canvas>
-    <div class="theme-toggle" id="themeToggle">🌓</div>
     <div class="container">
+        <canvas id="sandCanvas"></canvas>
         <div class="timer-container">
-            <svg class="progress-ring" width="240" height="240">
+            <svg class="progress-ring" width="300" height="300">
                 <circle
                     class="progress-ring-circle"
                     stroke="#4CAF50"
-                    stroke-width="8"
+                    stroke-width="10"
                     fill="transparent"
-                    r="112"
-                    cx="120"
-                    cy="120"
-                    style="transition: stroke-dashoffset 0.3s ease"
+                    r="140"
+                    cx="150"
+                    cy="150"
                 />
             </svg>
             <div class="timer-display" id="timerDisplay">00:00:00</div>
@@ -43,6 +41,7 @@
             <button id="resetBtn">Reset</button>
         </div>
     </div>
+    <script src="init.js"></script>
     <script src="sand.js"></script>
     <script src="timer.js"></script>
 </body>
