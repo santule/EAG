@@ -63,12 +63,14 @@ class RainAnimation {
         this.ctx = canvas.getContext('2d');
         this.drops = [];
         this.isRunning = false;
-        this.fillLevel = 0;
+        this.isPaused = false;
         this.waterLevel = 0;
-        this.duration = 5; // Short test duration
+        this.duration = 5;
         this.startTime = 0;
         this.lastTime = 0;
         this.lastDropTime = 0;
+        this.elapsedBeforePause = 0;
+        this.rippleOffset = 0;
         
         // Set up audio with lower initial volume
         this.rainSound = document.getElementById('rainSound');
@@ -86,7 +88,6 @@ class RainAnimation {
         // Audio controls with smoother transitions
         this.volumeSlider.addEventListener('input', () => {
             const volume = this.volumeSlider.value / 100;
-            // Smooth volume transition
             const currentVolume = this.rainSound.volume;
             const volumeDiff = volume - currentVolume;
             const steps = 10;
@@ -133,119 +134,170 @@ class RainAnimation {
         this.canvas.height = this.canvas.clientHeight;
     }
 
-    reset() {
-        this.isRunning = false;
-        this.drops = [];
-        this.fillLevel = 0;
-        this.rainSound.pause();
-        this.rainSound.currentTime = 0;
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    createDrop() {
+        const width = 1.5; // Thin drops
+        const length = Math.random() * 10 + 15; // Natural length 15-25px
+        const speed = Math.random() * 7 + 5; // Fast falling speed 5-12 units
+        const x = Math.random() * (this.canvas.width + 50) - 25; // Wide spawn area
+        const opacity = Math.random() * 0.3 + 0.2; // Semi-transparent
+        
+        return {
+            x,
+            y: -length,
+            width,
+            length,
+            speed,
+            opacity
+        };
     }
 
     start(duration) {
         this.duration = duration;
         this.isRunning = true;
+        this.isPaused = false;
         this.startTime = performance.now();
         this.lastTime = this.startTime;
         this.lastDropTime = this.startTime;
+        this.elapsedBeforePause = 0;
         this.drops = [];
-        this.fillLevel = 0;
-
+        this.waterLevel = 0;
+        this.rippleOffset = 0;
+        
         // Start rain sound
         this.rainSound.currentTime = 0;
         this.rainSound.play();
-
-        requestAnimationFrame(time => this.animate(time));
+        
+        requestAnimationFrame(() => this.animate());
     }
 
-    animate(currentTime) {
+    pause() {
+        if (this.isRunning) {
+            this.isPaused = true;
+            this.isRunning = false;
+            this.elapsedBeforePause += performance.now() - this.startTime;
+            this.rainSound.pause();
+        }
+    }
+
+    resume() {
+        if (this.isPaused) {
+            this.isPaused = false;
+            this.isRunning = true;
+            this.startTime = performance.now();
+            this.lastTime = this.startTime;
+            this.lastDropTime = this.startTime;
+            this.rainSound.play();
+            requestAnimationFrame(() => this.animate());
+        }
+    }
+
+    reset() {
+        this.isRunning = false;
+        this.isPaused = false;
+        this.drops = [];
+        this.waterLevel = 0;
+        this.elapsedBeforePause = 0;
+        this.rippleOffset = 0;
+        this.rainSound.pause();
+        this.rainSound.currentTime = 0;
+        this.clear();
+    }
+
+    complete() {
+        this.isRunning = false;
+        this.isPaused = false;
+        this.rainSound.pause();
+        this.alarmSound.currentTime = 0;
+        this.alarmSound.play();
+    }
+
+    clear() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    drawRipples() {
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = 'rgba(176, 224, 230, 0.4)';
+        this.ctx.lineWidth = 1;
+        
+        for (let x = 0; x < this.canvas.width; x += 10) {
+            const y = this.canvas.height - this.waterLevel + 
+                     Math.sin(x / 30 + this.rippleOffset) * 2 + 
+                     Math.sin(x / 15 + this.rippleOffset * 1.5) * 1;
+            
+            if (x === 0) {
+                this.ctx.moveTo(x, y);
+            } else {
+                this.ctx.lineTo(x, y);
+            }
+        }
+        
+        this.ctx.stroke();
+    }
+
+    animate() {
         if (!this.isRunning) return;
 
+        const currentTime = performance.now();
         const deltaTime = currentTime - this.lastTime;
-        this.lastTime = currentTime;
+        const totalElapsed = this.elapsedBeforePause + (currentTime - this.startTime);
+        const progress = Math.min(totalElapsed / (this.duration * 1000), 1);
 
-        // Check if timer is complete
-        const elapsed = currentTime - this.startTime;
-        const progress = elapsed / (this.duration * 1000);
-        
-        if (progress >= 1) {
-            this.isRunning = false;
-            
-            // Stop rain sound
-            this.rainSound.pause();
-            
-            // Play completion sound
-            this.alarmSound.currentTime = 0;
-            this.alarmSound.volume = this.volumeSlider.value / 100;
-            this.alarmSound.play();
-            
-            return;
-        }
-
-        // Calculate number of drops to spawn based on canvas width
-        const dropsPerSecond = Math.ceil(this.canvas.width / 20); // One drop every ~20px width
-        const dropInterval = 1000 / dropsPerSecond;
-        
-        // Spawn new drops
-        const now = performance.now();
-        while (now - this.lastDropTime > dropInterval) {
-            this.lastDropTime += dropInterval;
-            // Add 5 drops at random positions
+        // Create new drops
+        if (currentTime - this.lastDropTime > 30) { // 5 drops every 30ms
             for (let i = 0; i < 5; i++) {
-                const x = Math.random() * this.canvas.width;
-                const y = -20; // Start above canvas
-                this.drops.push(new RainDrop(x, y, this.canvas.width));
+                this.drops.push(this.createDrop());
             }
+            this.lastDropTime = currentTime;
         }
-
-        // Update and remove drops
-        this.drops = this.drops.filter(drop => {
-            drop.update(deltaTime);
-            return drop.y < this.canvas.height;
-        });
 
         // Clear canvas
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.clear();
 
-        // Draw drops
-        this.drops.forEach(drop => drop.draw(this.ctx));
+        // Update and draw drops with slant
+        this.ctx.save();
+        this.ctx.translate(this.canvas.width / 2, 0);
+        this.ctx.rotate(-20 * Math.PI / 180); // -20° slant angle
+        this.ctx.translate(-this.canvas.width / 2, 0);
 
-        // Calculate fill level based on progress
-        const targetHeight = this.canvas.height * 0.95;
-        const remainingHeight = targetHeight - 2;
-        this.fillLevel = 2 + (remainingHeight * progress);
-
-        // Draw water level
-        if (this.fillLevel > 0) {
-            const gradient = this.ctx.createLinearGradient(0, this.canvas.height - this.fillLevel, 0, this.canvas.height);
-            gradient.addColorStop(0, 'rgba(135, 206, 235, 0.4)');
-            gradient.addColorStop(1, 'rgba(135, 206, 235, 0.6)');
-            this.ctx.fillStyle = gradient;
-            this.ctx.fillRect(0, this.canvas.height - this.fillLevel, this.canvas.width, this.fillLevel);
-
-            // Add ripple effect
-            this.ctx.beginPath();
-            this.ctx.strokeStyle = 'rgba(135, 206, 235, 0.7)';
-            this.ctx.lineWidth = 1;
+        this.drops = this.drops.filter(drop => {
+            drop.y += drop.speed;
             
-            const rippleTime = Date.now();
-            for (let x = 0; x < this.canvas.width; x += 15) {
-                const wave = 
-                    Math.sin(x / 30 + rippleTime / 600) * 1.5 + 
-                    Math.sin(x / 20 + rippleTime / 400) * 1;
-                const y = this.canvas.height - this.fillLevel + wave;
-                
-                if (x === 0) {
-                    this.ctx.moveTo(x, y);
-                } else {
-                    this.ctx.lineTo(x, y);
-                }
-            }
+            // Draw drop
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = `rgba(176, 224, 230, ${drop.opacity})`;
+            this.ctx.lineWidth = drop.width;
+            this.ctx.moveTo(drop.x, drop.y);
+            this.ctx.lineTo(drop.x, drop.y - drop.length);
             this.ctx.stroke();
-        }
+            
+            return drop.y < this.canvas.height + drop.length;
+        });
+
+        this.ctx.restore();
+
+        // Draw water level with smooth fill
+        const targetLevel = this.canvas.height * progress;
+        this.waterLevel += (targetLevel - this.waterLevel) * 0.1;
+        
+        const gradient = this.ctx.createLinearGradient(0, this.canvas.height - this.waterLevel, 0, this.canvas.height);
+        gradient.addColorStop(0, 'rgba(176, 224, 230, 0.2)');
+        gradient.addColorStop(1, 'rgba(176, 224, 230, 0.4)');
+        
+        this.ctx.fillStyle = gradient;
+        this.ctx.fillRect(0, this.canvas.height - this.waterLevel, this.canvas.width, this.waterLevel);
+
+        // Draw ripples
+        this.rippleOffset += 0.05;
+        this.drawRipples();
 
         // Continue animation
-        requestAnimationFrame(time => this.animate(time));
+        this.lastTime = currentTime;
+        if (progress < 1) {
+            requestAnimationFrame(() => this.animate());
+        } else {
+            this.complete();
+        }
     }
 }
 

@@ -14,6 +14,7 @@ class Timer {
         this.totalSeconds = 0;
         this.remainingSeconds = 0;
         this.isRunning = false;
+        this.isPaused = false;
         this.interval = null;
         
         // Initialize rain animation
@@ -63,8 +64,14 @@ class Timer {
     }
     
     start() {
+        if (this.isPaused) {
+            this.resume();
+            return;
+        }
+        
         if (!this.isRunning && this.remainingSeconds > 0) {
             this.isRunning = true;
+            this.isPaused = false;
             this.startBtn.disabled = true;
             this.pauseBtn.disabled = false;
             this.resetBtn.disabled = false;
@@ -87,16 +94,37 @@ class Timer {
     pause() {
         if (this.isRunning) {
             this.isRunning = false;
+            this.isPaused = true;
             this.startBtn.disabled = false;
-            this.pauseBtn.disabled = true;
+            this.startBtn.textContent = 'Resume';
             clearInterval(this.interval);
             this.rainAnimation.pause();
         }
     }
     
+    resume() {
+        if (this.isPaused) {
+            this.isRunning = true;
+            this.isPaused = false;
+            this.startBtn.disabled = true;
+            this.startBtn.textContent = 'Start';
+            this.interval = setInterval(() => {
+                this.remainingSeconds--;
+                this.updateDisplay();
+                
+                if (this.remainingSeconds <= 0) {
+                    this.complete();
+                }
+            }, 1000);
+            this.rainAnimation.resume();
+        }
+    }
+    
     reset() {
         this.isRunning = false;
+        this.isPaused = false;
         this.startBtn.disabled = false;
+        this.startBtn.textContent = 'Start';
         this.pauseBtn.disabled = true;
         this.resetBtn.disabled = true;
         clearInterval(this.interval);
@@ -107,7 +135,9 @@ class Timer {
     
     complete() {
         this.isRunning = false;
+        this.isPaused = false;
         this.startBtn.disabled = false;
+        this.startBtn.textContent = 'Start';
         this.pauseBtn.disabled = true;
         this.resetBtn.disabled = false;
         clearInterval(this.interval);
