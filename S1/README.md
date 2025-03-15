@@ -2,6 +2,9 @@
 
 A peaceful Chrome extension that helps you track time with beautiful rain animation. Watch as raindrops fall and collect into a serene pool of water, visualizing your time in a calming way.
 
+
+![Image](https://github.com/user-attachments/assets/1346f5ef-4380-4da1-92cb-b547381af9dd)
+
 ## Features
 
 - Customizable timer from 1-60 minutes
