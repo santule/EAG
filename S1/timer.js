@@ -1,6 +1,7 @@
 // Timer functionality
 class Timer {
     constructor() {
+        // Get DOM elements
         this.hoursInput = document.getElementById('hours');
         this.minutesInput = document.getElementById('minutes');
         this.secondsInput = document.getElementById('seconds');
@@ -8,15 +9,16 @@ class Timer {
         this.startBtn = document.getElementById('startBtn');
         this.pauseBtn = document.getElementById('pauseBtn');
         this.resetBtn = document.getElementById('resetBtn');
-        this.progressRing = document.querySelector('.progress-ring-circle');
         
-        this.timeLeft = 0;
-        this.timerId = null;
-        this.totalTime = 0;
+        // Initialize state
+        this.totalSeconds = 0;
+        this.remainingSeconds = 0;
+        this.isRunning = false;
+        this.interval = null;
         
-        // Initialize button states
-        this.pauseBtn.disabled = true;
-        this.resetBtn.disabled = true;
+        // Initialize rain animation
+        const canvas = document.getElementById('sandCanvas');
+        this.rainAnimation = new RainAnimation(canvas);
         
         // Add event listeners
         this.startBtn.addEventListener('click', () => this.start());
@@ -28,125 +30,102 @@ class Timer {
         this.minutesInput.addEventListener('change', () => this.validateInput(this.minutesInput, 59));
         this.secondsInput.addEventListener('change', () => this.validateInput(this.secondsInput, 59));
         
-        // Set up progress ring
-        const radius = this.progressRing.r.baseVal.value;
-        const circumference = radius * 2 * Math.PI;
-        this.progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
-        this.progressRing.style.strokeDashoffset = circumference;
+        // Update display on input change
+        [this.hoursInput, this.minutesInput, this.secondsInput].forEach(input => {
+            input.addEventListener('change', () => this.updateDisplayFromInputs());
+        });
+        
+        // Initial display update
+        this.updateDisplayFromInputs();
     }
     
     validateInput(input, max) {
-        let value = parseInt(input.value) || 0;
-        value = Math.max(0, Math.min(value, max));
+        let value = parseInt(input.value);
+        if (isNaN(value) || value < 0) value = 0;
+        if (value > max) value = max;
         input.value = value;
     }
     
-    updateDisplay(totalSeconds) {
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        
-        this.display.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
-    
-    setProgress(percent) {
-        const radius = this.progressRing.r.baseVal.value;
-        const circumference = radius * 2 * Math.PI;
-        const offset = circumference - (percent / 100 * circumference);
-        this.progressRing.style.strokeDashoffset = offset;
-    }
-    
-    start() {
-        // Calculate total seconds
+    updateDisplayFromInputs() {
         const hours = parseInt(this.hoursInput.value) || 0;
         const minutes = parseInt(this.minutesInput.value) || 0;
         const seconds = parseInt(this.secondsInput.value) || 0;
-        
-        if (hours === 0 && minutes === 0 && seconds === 0) {
-            return;
-        }
-        
-        // If timer is not already running
-        if (!this.timerId) {
-            this.timeLeft = hours * 3600 + minutes * 60 + seconds;
-            this.totalTime = this.timeLeft;
+        this.totalSeconds = hours * 3600 + minutes * 60 + seconds;
+        this.remainingSeconds = this.totalSeconds;
+        this.updateDisplay();
+    }
+    
+    updateDisplay() {
+        const hours = Math.floor(this.remainingSeconds / 3600);
+        const minutes = Math.floor((this.remainingSeconds % 3600) / 60);
+        const seconds = this.remainingSeconds % 60;
+        this.display.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    start() {
+        if (!this.isRunning && this.remainingSeconds > 0) {
+            this.isRunning = true;
+            this.startBtn.disabled = true;
+            this.pauseBtn.disabled = false;
+            this.resetBtn.disabled = false;
+            this.disableInputs(true);
             
-            // Start sand animation
-            if (window.sandAnimation) {
-                window.sandAnimation.start();
-            }
-        }
-        
-        // Update UI
-        this.startBtn.disabled = true;
-        this.pauseBtn.disabled = false;
-        this.resetBtn.disabled = false;
-        this.hoursInput.disabled = true;
-        this.minutesInput.disabled = true;
-        this.secondsInput.disabled = true;
-        
-        // Start countdown
-        this.timerId = setInterval(() => {
-            this.timeLeft--;
-            this.updateDisplay(this.timeLeft);
-            this.setProgress((this.timeLeft / this.totalTime) * 100);
+            // Start rain animation
+            this.rainAnimation.start(this.totalSeconds);
             
-            if (this.timeLeft <= 0) {
-                this.reset();
-            }
-        }, 1000);
+            this.interval = setInterval(() => {
+                this.remainingSeconds--;
+                this.updateDisplay();
+                
+                if (this.remainingSeconds <= 0) {
+                    this.complete();
+                }
+            }, 1000);
+        }
     }
     
     pause() {
-        if (this.timerId) {
-            clearInterval(this.timerId);
-            this.timerId = null;
-            
-            // Pause sand animation
-            if (window.sandAnimation) {
-                window.sandAnimation.pause();
-            }
-            
-            // Update UI
+        if (this.isRunning) {
+            this.isRunning = false;
             this.startBtn.disabled = false;
             this.pauseBtn.disabled = true;
+            clearInterval(this.interval);
+            this.rainAnimation.pause();
         }
     }
     
     reset() {
-        // Clear timer
-        if (this.timerId) {
-            clearInterval(this.timerId);
-            this.timerId = null;
-        }
-        
-        // Reset sand animation
-        if (window.sandAnimation) {
-            window.sandAnimation.reset();
-        }
-        
-        // Reset UI
-        this.timeLeft = 0;
-        this.totalTime = 0;
-        this.updateDisplay(0);
-        this.setProgress(100);
+        this.isRunning = false;
         this.startBtn.disabled = false;
         this.pauseBtn.disabled = true;
         this.resetBtn.disabled = true;
-        this.hoursInput.disabled = false;
-        this.minutesInput.disabled = false;
-        this.secondsInput.disabled = false;
-        this.hoursInput.value = 0;
-        this.minutesInput.value = 0;
-        this.secondsInput.value = 0;
+        clearInterval(this.interval);
+        this.disableInputs(false);
+        this.updateDisplayFromInputs();
+        this.rainAnimation.reset();
+    }
+    
+    complete() {
+        this.isRunning = false;
+        this.startBtn.disabled = false;
+        this.pauseBtn.disabled = true;
+        this.resetBtn.disabled = false;
+        clearInterval(this.interval);
+        this.disableInputs(false);
+        this.rainAnimation.complete();
+    }
+    
+    disableInputs(disabled) {
+        this.hoursInput.disabled = disabled;
+        this.minutesInput.disabled = disabled;
+        this.secondsInput.disabled = disabled;
     }
 }
 
 // Initialize timer when the document is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        window.timer = new Timer();
-    });
-} else {
+document.addEventListener('DOMContentLoaded', () => {
     window.timer = new Timer();
-}
+    // Set demo duration - 15 seconds is good for demo
+    window.timer.secondsInput.value = 15;
+    window.timer.updateDisplayFromInputs();
+});

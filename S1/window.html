@@ -1,27 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TimeDrops</title>
+    <title>TimeDrops - A Peaceful Rain Timer</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <canvas id="sandCanvas"></canvas>
-        <div class="timer-container">
-            <svg class="progress-ring" width="300" height="300">
-                <circle
-                    class="progress-ring-circle"
-                    stroke="#4CAF50"
-                    stroke-width="10"
-                    fill="transparent"
-                    r="140"
-                    cx="150"
-                    cy="150"
-                />
-            </svg>
-            <div class="timer-display" id="timerDisplay">00:00:00</div>
-        </div>
-        <div class="time-inputs">
+        <h1>TimeDrops</h1>
+        <div class="timer-inputs">
             <div class="time-input-group">
                 <input type="number" id="hours" min="0" max="23" value="0">
                 <label>Hours</label>
@@ -31,18 +18,43 @@
                 <label>Minutes</label>
             </div>
             <div class="time-input-group">
-                <input type="number" id="seconds" min="0" max="59" value="0">
+                <input type="number" id="seconds" min="0" max="59" value="15">
                 <label>Seconds</label>
             </div>
         </div>
-        <div class="buttons">
-            <button id="startBtn">Start</button>
-            <button id="pauseBtn">Pause</button>
-            <button id="resetBtn">Reset</button>
+        
+        <div id="timerDisplay" class="timer-display">00:00:15</div>
+        
+        <div class="canvas-container">
+            <canvas id="sandCanvas"></canvas>
         </div>
+        
+        <div class="button-group">
+            <button id="startBtn">Start</button>
+            <button id="pauseBtn" disabled>Pause</button>
+            <button id="resetBtn" disabled>Reset</button>
+        </div>
+        
+        <div class="volume-control">
+            <button id="muteBtn" class="icon-button">
+                <span class="material-icons">volume_down</span>
+            </button>
+            <input type="range" id="volumeSlider" min="0" max="100" value="30">
+        </div>
+
+        <!-- Audio elements -->
+        <audio id="rainSound" preload="auto" loop>
+            <source src="rain.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <audio id="alarmSound" preload="auto">
+            <source src="complete.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
     </div>
-    <script src="init.js"></script>
-    <script src="sand.js"></script>
+
+    <!-- Load scripts -->
     <script src="timer.js"></script>
+    <script src="sand.js"></script>
 </body>
 </html>

@@ -1,186 +1,258 @@
 class RainDrop {
-    constructor(x, y, canvasWidth) {
+    constructor(x, y, containerWidth) {
         this.x = x;
         this.y = y;
-        this.speed = 5 + Math.random() * 7; 
-        this.size = 1.5;  
-        this.opacity = 0.5;  
-        this.length = 15 + Math.random() * 10;  
-        this.slant = -20; 
-        this.canvasWidth = canvasWidth;
-        this.color = `rgba(176, 224, 230, ${0.3 + Math.random() * 0.3})`; 
+        // Varied speeds for more natural movement
+        this.speed = 7 + Math.random() * 8;
+        // Varied drop sizes
+        this.length = 15 + Math.random() * 10;
+        this.width = 1.5 + Math.random() * 0.5;
+        // Slightly varied angles
+        this.slant = -20 + (Math.random() * 5 - 2.5);
+        this.containerWidth = containerWidth;
+        // Higher base opacity for better visibility
+        this.opacity = 0.6 + Math.random() * 0.2;
+        // Trail effect
+        this.trail = [];
+        this.maxTrailLength = 3;
     }
 
-    update(height, waterLevel) {
-        this.y += this.speed;
-        this.x += this.speed * Math.tan(this.slant * Math.PI / 180);
-        return this.y < waterLevel && this.x > 0 && this.x < this.canvasWidth;
+    update(deltaTime) {
+        // Update position with delta time for smooth movement
+        const movement = (this.speed * deltaTime) / 16; // Normalize to ~60fps
+        this.y += movement;
+        
+        // Update x position based on slant
+        const xMovement = movement * Math.tan(this.slant * Math.PI / 180);
+        this.x += xMovement;
+
+        // Update trail
+        this.trail.unshift({ x: this.x, y: this.y });
+        if (this.trail.length > this.maxTrailLength) {
+            this.trail.pop();
+        }
     }
 
     draw(ctx) {
-        ctx.beginPath();
-        ctx.strokeStyle = this.color;
-        ctx.lineWidth = this.size;
-        ctx.globalAlpha = this.opacity;
-        
-        const endX = this.x + Math.tan(this.slant * Math.PI / 180) * this.length;
-        const endY = this.y + this.length;
-        
-        ctx.moveTo(this.x, this.y);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-        ctx.globalAlpha = 1;
+        // Draw trail with gradient opacity
+        if (this.trail.length > 1) {
+            const gradient = ctx.createLinearGradient(
+                this.trail[0].x, this.trail[0].y,
+                this.trail[this.trail.length - 1].x, this.trail[this.trail.length - 1].y
+            );
+            // More saturated blue color with higher opacity
+            gradient.addColorStop(0, `rgba(135, 206, 235, ${this.opacity})`);
+            gradient.addColorStop(1, `rgba(135, 206, 235, ${this.opacity * 0.4})`);
+            
+            ctx.beginPath();
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = this.width;
+            
+            ctx.moveTo(this.trail[0].x, this.trail[0].y);
+            for (let i = 1; i < this.trail.length; i++) {
+                ctx.lineTo(this.trail[i].x, this.trail[i].y);
+            }
+            ctx.stroke();
+        }
     }
 }
 
 class RainAnimation {
-    constructor() {
-        this.canvas = document.getElementById('sandCanvas');
-        if (!this.canvas) {
-            console.error('Canvas element not found');
-            return;
-        }
-
-        this.ctx = this.canvas.getContext('2d');
-        if (!this.ctx) {
-            console.error('Could not get canvas context');
-            return;
-        }
-
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
         this.drops = [];
         this.isRunning = false;
-        this.spawnInterval = null;
-        this.animationFrame = null;
-        this.waterLevel = this.canvas.height;
-        this.startTime = null;
-        this.duration = null;
         this.fillLevel = 0;
-        this.width = this.canvas.width;
+        this.waterLevel = 0;
+        this.duration = 5; // Short test duration
+        this.startTime = 0;
+        this.lastTime = 0;
+        this.lastDropTime = 0;
+        
+        // Set up audio with lower initial volume
+        this.rainSound = document.getElementById('rainSound');
+        this.alarmSound = document.getElementById('alarmSound');
+        this.volumeSlider = document.getElementById('volumeSlider');
+        this.muteBtn = document.getElementById('muteBtn');
+        this.isMuted = false;
+        
+        // Initialize volume at a peaceful level
+        const initialVolume = Math.min(0.3, this.volumeSlider.value / 100);
+        this.rainSound.volume = initialVolume;
+        this.alarmSound.volume = initialVolume;
+        this.volumeSlider.value = Math.floor(initialVolume * 100);
+
+        // Audio controls with smoother transitions
+        this.volumeSlider.addEventListener('input', () => {
+            const volume = this.volumeSlider.value / 100;
+            // Smooth volume transition
+            const currentVolume = this.rainSound.volume;
+            const volumeDiff = volume - currentVolume;
+            const steps = 10;
+            const stepSize = volumeDiff / steps;
+            
+            let step = 0;
+            const smoothVolume = setInterval(() => {
+                if (step < steps) {
+                    this.rainSound.volume = currentVolume + (stepSize * step);
+                    this.alarmSound.volume = currentVolume + (stepSize * step);
+                    step++;
+                } else {
+                    this.rainSound.volume = volume;
+                    this.alarmSound.volume = volume;
+                    clearInterval(smoothVolume);
+                }
+            }, 20);
+
+            const volumeIcon = this.muteBtn.querySelector('.material-icons');
+            if (this.volumeSlider.value === '0') {
+                volumeIcon.textContent = 'volume_off';
+            } else if (this.volumeSlider.value < 50) {
+                volumeIcon.textContent = 'volume_down';
+            } else {
+                volumeIcon.textContent = 'volume_up';
+            }
+        });
+
+        this.muteBtn.addEventListener('click', () => {
+            this.isMuted = !this.isMuted;
+            this.rainSound.muted = this.isMuted;
+            this.alarmSound.muted = this.isMuted;
+            const volumeIcon = this.muteBtn.querySelector('.material-icons');
+            volumeIcon.textContent = this.isMuted ? 'volume_off' : 
+                (this.volumeSlider.value < 50 ? 'volume_down' : 'volume_up');
+        });
 
         this.resize();
         window.addEventListener('resize', () => this.resize());
-
-        document.addEventListener('timerUpdate', (e) => {
-            if (this.isRunning && this.startTime && this.duration) {
-                const elapsed = (Date.now() - this.startTime) / 1000;
-                const progress = Math.min(elapsed / this.duration, 1);
-                this.waterLevel = this.canvas.height - (this.canvas.height * progress);
-            }
-        });
     }
 
     resize() {
-        const rect = this.canvas.getBoundingClientRect();
-        this.canvas.width = rect.width;
-        this.canvas.height = rect.height;
-        this.waterLevel = this.canvas.height;
-        this.width = this.canvas.width;
+        this.canvas.width = this.canvas.clientWidth;
+        this.canvas.height = this.canvas.clientHeight;
     }
 
-    start() {
-        if (this.isRunning) return;
-        
-        this.isRunning = true;
-        this.startTime = Date.now();
+    reset() {
+        this.isRunning = false;
+        this.drops = [];
         this.fillLevel = 0;
-        
-        if (window.timer && window.timer.timeLeft) {
-            this.duration = window.timer.timeLeft;
-            this.waterLevel = this.canvas.height;
-        } else {
-            this.duration = 60;
-            this.waterLevel = this.canvas.height;
-        }
-        
-        this.spawnInterval = setInterval(() => {
-            for (let i = 0; i < 5; i++) { 
-                const x = Math.random() * (this.width + 100) - 50;
-                this.drops.push(new RainDrop(x, -20, this.width));
-            }
-            
-            if (this.fillLevel < this.canvas.height) {
-                this.fillLevel += 0.2;
-            }
-        }, 30); 
-
-        this.animate();
+        this.rainSound.pause();
+        this.rainSound.currentTime = 0;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    animate() {
+    start(duration) {
+        this.duration = duration;
+        this.isRunning = true;
+        this.startTime = performance.now();
+        this.lastTime = this.startTime;
+        this.lastDropTime = this.startTime;
+        this.drops = [];
+        this.fillLevel = 0;
+
+        // Start rain sound
+        this.rainSound.currentTime = 0;
+        this.rainSound.play();
+
+        requestAnimationFrame(time => this.animate(time));
+    }
+
+    animate(currentTime) {
         if (!this.isRunning) return;
 
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        const deltaTime = currentTime - this.lastTime;
+        this.lastTime = currentTime;
 
-        if (this.startTime && this.duration) {
-            const elapsed = (Date.now() - this.startTime) / 1000;
-            const progress = Math.min(elapsed / this.duration, 1);
-            this.waterLevel = this.canvas.height - (this.canvas.height * progress);
+        // Check if timer is complete
+        const elapsed = currentTime - this.startTime;
+        const progress = elapsed / (this.duration * 1000);
+        
+        if (progress >= 1) {
+            this.isRunning = false;
+            
+            // Stop rain sound
+            this.rainSound.pause();
+            
+            // Play completion sound
+            this.alarmSound.currentTime = 0;
+            this.alarmSound.volume = this.volumeSlider.value / 100;
+            this.alarmSound.play();
+            
+            return;
         }
 
-        const bottomWaterHeight = Math.min(this.fillLevel, this.canvas.height - this.waterLevel);
-        if (bottomWaterHeight > 0) {
-            const gradient = this.ctx.createLinearGradient(0, this.canvas.height - bottomWaterHeight, 0, this.canvas.height);
-            gradient.addColorStop(0, 'rgba(176, 224, 230, 0.3)'); 
-            gradient.addColorStop(1, 'rgba(176, 224, 230, 0.5)');
-            this.ctx.fillStyle = gradient;
-            this.ctx.fillRect(0, this.canvas.height - bottomWaterHeight, this.canvas.width, bottomWaterHeight);
-        }
-
-        this.drops = this.drops.filter(drop => {
-            const isAlive = drop.update(this.canvas.height, this.canvas.height - bottomWaterHeight);
-            if (isAlive) {
-                drop.draw(this.ctx);
+        // Calculate number of drops to spawn based on canvas width
+        const dropsPerSecond = Math.ceil(this.canvas.width / 20); // One drop every ~20px width
+        const dropInterval = 1000 / dropsPerSecond;
+        
+        // Spawn new drops
+        const now = performance.now();
+        while (now - this.lastDropTime > dropInterval) {
+            this.lastDropTime += dropInterval;
+            // Add 5 drops at random positions
+            for (let i = 0; i < 5; i++) {
+                const x = Math.random() * this.canvas.width;
+                const y = -20; // Start above canvas
+                this.drops.push(new RainDrop(x, y, this.canvas.width));
             }
-            return isAlive;
+        }
+
+        // Update and remove drops
+        this.drops = this.drops.filter(drop => {
+            drop.update(deltaTime);
+            return drop.y < this.canvas.height;
         });
 
-        if (bottomWaterHeight > 0) {
+        // Clear canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Draw drops
+        this.drops.forEach(drop => drop.draw(this.ctx));
+
+        // Calculate fill level based on progress
+        const targetHeight = this.canvas.height * 0.95;
+        const remainingHeight = targetHeight - 2;
+        this.fillLevel = 2 + (remainingHeight * progress);
+
+        // Draw water level
+        if (this.fillLevel > 0) {
+            const gradient = this.ctx.createLinearGradient(0, this.canvas.height - this.fillLevel, 0, this.canvas.height);
+            gradient.addColorStop(0, 'rgba(135, 206, 235, 0.4)');
+            gradient.addColorStop(1, 'rgba(135, 206, 235, 0.6)');
+            this.ctx.fillStyle = gradient;
+            this.ctx.fillRect(0, this.canvas.height - this.fillLevel, this.canvas.width, this.fillLevel);
+
+            // Add ripple effect
             this.ctx.beginPath();
-            this.ctx.strokeStyle = 'rgba(176, 224, 230, 0.6)';
+            this.ctx.strokeStyle = 'rgba(135, 206, 235, 0.7)';
             this.ctx.lineWidth = 1;
-            const waterY = this.canvas.height - bottomWaterHeight;
-            for (let x = 0; x < this.canvas.width; x += 15) { 
-                const wave = Math.sin(x / 20 + Date.now() / 400) * 2; 
+            
+            const rippleTime = Date.now();
+            for (let x = 0; x < this.canvas.width; x += 15) {
+                const wave = 
+                    Math.sin(x / 30 + rippleTime / 600) * 1.5 + 
+                    Math.sin(x / 20 + rippleTime / 400) * 1;
+                const y = this.canvas.height - this.fillLevel + wave;
+                
                 if (x === 0) {
-                    this.ctx.moveTo(x, waterY + wave);
+                    this.ctx.moveTo(x, y);
                 } else {
-                    this.ctx.lineTo(x, waterY + wave);
+                    this.ctx.lineTo(x, y);
                 }
             }
             this.ctx.stroke();
         }
 
-        this.animationFrame = requestAnimationFrame(() => this.animate());
-    }
-
-    pause() {
-        this.isRunning = false;
-        if (this.spawnInterval) {
-            clearInterval(this.spawnInterval);
-            this.spawnInterval = null;
-        }
-        if (this.animationFrame) {
-            cancelAnimationFrame(this.animationFrame);
-            this.animationFrame = null;
-        }
-    }
-
-    reset() {
-        this.pause();
-        this.drops = [];
-        this.waterLevel = this.canvas.height;
-        this.startTime = null;
-        this.duration = null;
-        this.fillLevel = 0;
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // Continue animation
+        requestAnimationFrame(time => this.animate(time));
     }
 }
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        window.sandAnimation = new RainAnimation();
+        window.sandAnimation = new RainAnimation(document.getElementById('sandCanvas'));
     });
 } else {
-    window.sandAnimation = new RainAnimation();
+    window.sandAnimation = new RainAnimation(document.getElementById('sandCanvas'));
 }
