@@ -1,14 +1,14 @@
 {
     "manifest_version": 3,
-    "name": "Timer with Sand Animation",
+    "name": "TimeDrops",
     "version": "1.0",
-    "description": "A timer with beautiful flowing sand animation",
-    "permissions": ["scripting", "storage", "windows"],
+    "description": "A peaceful rain-themed timer that helps you track time with beautiful water animation",
+    "permissions": ["storage"],
     "background": {
         "service_worker": "background.js"
     },
     "action": {
-        "default_title": "Timer with Sand"
+        "default_title": "TimeDrops"
     },
     "content_security_policy": {
         "extension_pages": "script-src 'self'; object-src 'self'"
