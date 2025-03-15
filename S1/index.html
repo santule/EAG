@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Timer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="sandCanvas"></canvas>
+    <div class="theme-toggle" id="themeToggle">🌓</div>
+    <div class="container">
+        <div class="timer-container">
+            <svg class="progress-ring" width="240" height="240">
+                <circle
+                    class="progress-ring-circle"
+                    stroke="#4CAF50"
+                    stroke-width="8"
+                    fill="transparent"
+                    r="112"
+                    cx="120"
+                    cy="120"
+                    style="transition: stroke-dashoffset 0.3s ease"
+                />
+            </svg>
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+        </div>
+        <div class="time-inputs">
+            <div class="time-input-group">
+                <input type="number" id="hours" min="0" max="23" value="0">
+                <label>Hours</label>
+            </div>
+            <div class="time-input-group">
+                <input type="number" id="minutes" min="0" max="59" value="0">
+                <label>Minutes</label>
+            </div>
+            <div class="time-input-group">
+                <input type="number" id="seconds" min="0" max="59" value="0">
+                <label>Seconds</label>
+            </div>
+        </div>
+        <div class="buttons">
+            <button id="startBtn">Start</button>
+            <button id="pauseBtn">Pause</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+    </div>
+    <script src="sand.js"></script>
+    <script src="timer.js"></script>
+</body>
+</html>

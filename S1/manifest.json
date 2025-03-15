@@ -1,14 +1,14 @@
 {
-  "manifest_version": 3,
-  "name": "Simple Timer Extension",
-  "version": "1.0",
-  "description": "A simple timer extension",
-  "permissions": ["scripting", "storage", "windows"],
-  "host_permissions": ["http://*/*", "https://*/*"],
-  "background": {
-    "service_worker": "background.js"
-  },
-  "action": {
-    "default_title": "Timer"
-  }
+    "manifest_version": 3,
+    "name": "Simple Timer Extension",
+    "version": "1.0",
+    "description": "A simple timer extension",
+    "permissions": ["scripting", "storage", "windows", "windows"],
+    "host_permissions": ["http://*/*", "https://*/*"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_title": "Timer"
+    }
 }
