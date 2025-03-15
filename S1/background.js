@@ -83,9 +83,15 @@ function resetTimer() {
     timer.endTime = 0;
 }
 
-// Listen for extension button click
+// Open timer window when extension icon is clicked
 chrome.action.onClicked.addListener(() => {
-    openTimerWindow();
+    chrome.windows.create({
+        url: 'window.html',
+        type: 'popup',
+        width: 400,
+        height: 600,
+        focused: true
+    });
 });
 
 // Listen for messages from popup

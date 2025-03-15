@@ -8,6 +8,7 @@
             --secondary-text: #666;
             --input-border: #ddd;
             --timer-bg: #f5f5f5;
+            --sand-colors: #FF1744, #FF4081, #AA00FF, #2979FF, #00E5FF, #1DE9B6, #00E676, #FFEA00, #FF3D00;
         }
 
         .dark-mode {
@@ -16,14 +17,22 @@
             --secondary-text: #aaa;
             --input-border: #444;
             --timer-bg: #2a2a2a;
+            --sand-colors: #FF1744, #FF4081, #AA00FF, #2979FF, #00E5FF, #1DE9B6, #00E676, #FFEA00, #FF3D00;
         }
 
-        body {
+        html, body {
+            min-width: 400px; /* Set minimum width for the popup */
             width: 100%;
             height: 100vh;
             margin: 0;
-            padding: 40px;
+            padding: 0;
             font-family: Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        body {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -31,31 +40,22 @@
             box-sizing: border-box;
             user-select: none;
             -webkit-user-select: none;
-            background: var(--bg-color);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-            font-size: 24px;
+            padding: 20px;
+            overflow: auto;
         }
 
         .container {
             width: 100%;
-            max-width: 400px;
-            text-align: center;
-            margin-top: 20px;
+            min-width: 350px;
+            padding: 0 10px;
+            box-sizing: border-box;
         }
 
         .timer-container {
             position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 0 auto 30px;
+            width: 250px;
+            height: 250px;
+            margin: 0 auto 20px;
         }
 
         .progress-ring {
@@ -70,19 +70,17 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 48px;
+            font-size: 2.5em;
             font-weight: bold;
-            text-align: center;
-            font-family: monospace;
-            z-index: 1;
             color: var(--text-color);
         }
 
         .time-inputs {
             display: flex;
-            gap: 20px;
+            gap: 10px;
             justify-content: center;
-            margin: 40px 0;
+            margin: 20px 0;
+            flex-wrap: wrap;
         }
 
         .time-input-group {
@@ -92,46 +90,25 @@
         }
 
         input[type="number"] {
-            width: 80px;
-            padding: 12px;
+            width: 70px;
+            padding: 8px;
             border: 2px solid var(--input-border);
             border-radius: 6px;
             text-align: center;
-            font-size: 20px;
-            transition: border-color 0.3s;
-            background: var(--bg-color);
-            color: var(--text-color);
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            opacity: 1;
-            height: 30px;
-        }
-
-        label {
-            font-size: 14px;
-            color: var(--secondary-text);
-            margin-top: 8px;
-            font-weight: bold;
+            font-size: 18px;
         }
 
         .buttons {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
             width: 100%;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         button {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -139,51 +116,22 @@
             font-weight: bold;
             transition: all 0.3s ease;
         }
-
-        button:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.1);
-        }
-
-        button:active {
-            transform: translateY(1px);
-        }
-
-        #startBtn {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        #pauseBtn {
-            background-color: #ff9800;
-            color: white;
-        }
-
-        #resetBtn {
-            background-color: #f44336;
-            color: white;
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
     </style>
 </head>
 <body>
+    <canvas id="sandCanvas"></canvas>
     <div class="theme-toggle" id="themeToggle">🌓</div>
     <div class="container">
         <div class="timer-container">
-            <svg class="progress-ring" width="300" height="300">
+            <svg class="progress-ring" width="240" height="240">
                 <circle
                     class="progress-ring-circle"
                     stroke="#4CAF50"
                     stroke-width="8"
                     fill="transparent"
-                    r="140"
-                    cx="150"
-                    cy="150"
+                    r="112"
+                    cx="120"
+                    cy="120"
                     style="transition: stroke-dashoffset 0.3s ease"
                 />
             </svg>
@@ -209,6 +157,7 @@
             <button id="resetBtn">Reset</button>
         </div>
     </div>
+    <script src="sand.js"></script>
     <script src="popup.js"></script>
 </body>
 </html>

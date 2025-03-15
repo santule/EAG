@@ -26,30 +26,6 @@ function setProgress(percent) {
     progressRing.style.strokeDashoffset = offset;
 }
 
-// Load and apply theme
-function loadTheme() {
-    const isDark = localStorage.getItem('darkMode') === 'true';
-    document.body.classList.toggle('dark-mode', isDark);
-    themeToggle.textContent = isDark ? '🌞' : '🌓';
-    // Update sand color when theme changes
-    if (window.sandAnimation) {
-        window.sandAnimation.stop();
-        if (isRunning) {
-            window.sandAnimation.start();
-        }
-    }
-}
-
-// Toggle theme
-themeToggle.addEventListener('click', () => {
-    const isDark = document.body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', isDark);
-    themeToggle.textContent = isDark ? '🌞' : '🌓';
-});
-
-// Initialize theme
-loadTheme();
-
 // Format time as HH:MM:SS
 function formatTime(totalSeconds) {
     const hours = Math.floor(totalSeconds / 3600);
