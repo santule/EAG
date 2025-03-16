@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CodeLens AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="prism.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>CodeLens AI</h1>
+        
+        <div class="selected-code">
+            <h3>Selected Code</h3>
+            <pre><code id="codeDisplay" class="language-plaintext">Select code on the page to analyze it</code></pre>
+        </div>
+
+        <div class="analysis-options">
+            <select id="analysisType">
+                <option value="explain">Explain Code</option>
+                <option value="improve">Suggest Improvements</option>
+                <option value="security">Security Analysis</option>
+                <option value="complexity">Complexity Analysis</option>
+            </select>
+            <button id="analyzeButton">Analyze</button>
+        </div>
+
+        <div id="loading" class="hidden">
+            <span class="spinner"></span> Analyzing code...
+        </div>
+        
+        <div class="response-container">
+            <div id="response" class="response-area markdown-body"></div>
+        </div>
+    </div>
+    <!-- Load scripts at the end for better performance -->
+    <script src="marked.min.js"></script>
+    <script src="prism.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
