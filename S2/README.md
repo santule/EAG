@@ -2,6 +2,8 @@
 
 CodeLens AI is a powerful Chrome extension that uses Google's Gemini AI to analyze code snippets directly from your browser. Get instant insights about code functionality, potential improvements, security vulnerabilities, and performance characteristics.
 
+<img width="1257" alt="Image" src="https://github.com/user-attachments/assets/3317bf92-664e-4f7f-88a5-38b82785adec" />
+
 ## Features
 
 - 🔍 **Code Analysis**: Select any code on a webpage and get instant analysis
