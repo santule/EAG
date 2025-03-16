@@ -1,0 +1,260 @@
+.container {
+  width: 600px;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+h1 {
+  color: #2962ff;
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+h3 {
+  color: #455a64;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.selected-code {
+  margin-bottom: 20px;
+}
+
+.selected-code pre {
+  margin: 0;
+  padding: 12px;
+  background-color: #2b2b2b;
+  border-radius: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.selected-code code {
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+/* Override Prism.js theme for dark mode */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #fff;
+  background: none;
+  text-shadow: none;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 14px;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+  tab-size: 2;
+  hyphens: none;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #8e908c;
+}
+
+.token.punctuation {
+  color: #c5c8c6;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol {
+  color: #81a2be;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin {
+  color: #b5bd68;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
+  color: #cc99cd;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #7aa6da;
+}
+
+.token.function {
+  color: #c397d8;
+}
+
+.token.regex,
+.token.important {
+  color: #f0c674;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.analysis-options {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+select {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 14px;
+}
+
+button {
+  background-color: #2962ff;
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #1565c0;
+}
+
+button:disabled {
+  background-color: #90caf9;
+  cursor: not-allowed;
+}
+
+.response-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #fff;
+  margin-top: 20px;
+}
+
+.response-area {
+  padding: 20px;
+  min-height: 100px;
+  max-height: 400px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Markdown Styling */
+.markdown-body {
+  color: #24292e;
+}
+
+.markdown-body h2 {
+  margin-top: 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eaecef;
+  color: #2962ff;
+  font-size: 20px;
+}
+
+.markdown-body h3 {
+  margin-top: 20px;
+  color: #455a64;
+  font-size: 16px;
+}
+
+.markdown-body p {
+  margin: 12px 0;
+}
+
+.markdown-body code {
+  padding: 2px 6px;
+  background-color: #f6f8fa;
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 13px;
+}
+
+.markdown-body pre {
+  padding: 16px;
+  background-color: #2b2b2b;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.markdown-body pre code {
+  padding: 0;
+  background-color: transparent;
+  color: #fff;
+}
+
+#loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #2962ff;
+  font-size: 14px;
+  margin: 20px 0;
+}
+
+#loading.hidden {
+  display: none;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e0e0e0;
+  border-top: 2px solid #2962ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
