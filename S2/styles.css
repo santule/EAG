@@ -1,5 +1,6 @@
 .container {
   width: 600px;
+  height: 800px;
   padding: 20px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
 }
@@ -161,7 +162,7 @@ button:disabled {
 .response-area {
   padding: 20px;
   min-height: 100px;
-  max-height: 400px;
+  max-height: 600px;
   overflow-y: auto;
   font-size: 14px;
   line-height: 1.6;
@@ -196,11 +197,13 @@ button:disabled {
   border-radius: 3px;
   font-family: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
   font-size: 13px;
+  color: #24292e;
 }
 
 .markdown-body pre {
   padding: 16px;
-  background-color: #2b2b2b;
+  background-color: #f6f8fa;
+  border: 1px solid #e0e0e0;
   border-radius: 6px;
   overflow-x: auto;
 }
@@ -208,8 +211,19 @@ button:disabled {
 .markdown-body pre code {
   padding: 0;
   background-color: transparent;
-  color: #fff;
+  color: #24292e;
+  border: none;
 }
+
+/* Code syntax highlighting colors */
+.markdown-body .token.comment { color: #6a737d; }
+.markdown-body .token.keyword { color: #d73a49; }
+.markdown-body .token.string { color: #032f62; }
+.markdown-body .token.number { color: #005cc5; }
+.markdown-body .token.function { color: #6f42c1; }
+.markdown-body .token.class-name { color: #6f42c1; }
+.markdown-body .token.property { color: #005cc5; }
+.markdown-body .token.operator { color: #d73a49; }
 
 #loading {
   display: flex;
