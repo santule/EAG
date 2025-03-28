@@ -35,10 +35,10 @@ h2 {
 }
 
 #passage-content {
-  font-size: 16px;
+  font-style: italic;
   line-height: 1.6;
-  color: #1a202c;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  color: #2d3748;
 }
 
 .reference {
@@ -132,4 +132,15 @@ h2 {
 
 #save-key:active {
   transform: translateY(1px);
+}
+
+.subtitle {
+  color: #718096;
+  font-size: 15px;
+  text-align: center;
+  margin: -10px 0 20px 0;
+  line-height: 1.5;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
