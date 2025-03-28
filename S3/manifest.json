@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Stoic Mentor",
+  "version": "1.0",
+  "description": "Daily wisdom from Marcus Aurelius's Meditations",
+  "permissions": ["activeTab", "storage"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
