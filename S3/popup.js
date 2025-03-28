@@ -1,19 +1,20 @@
+// Tracker object to keep track of current position
+const tracker = {
+  book: 1,
+  text: 1
+};
+
 // DOM Elements
 let passageContent;
 let referenceText;
 let interpretationContent;
 let exerciseContent;
 let nextButton;
+let restartButton;
 let apiKeySection;
 let contentSection;
 let apiKeyInput;
 let saveKeyButton;
-
-// Tracker object to keep track of current position
-const tracker = {
-  book: 1,
-  text: 1
-};
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async function() {
@@ -23,10 +24,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   interpretationContent = document.getElementById('interpretation-content');
   exerciseContent = document.getElementById('exercise-content');
   nextButton = document.getElementById('next-button');
+  restartButton = document.getElementById('restart-button');
   apiKeySection = document.getElementById('api-key-section');
   contentSection = document.getElementById('content-section');
   apiKeyInput = document.getElementById('api-key');
   saveKeyButton = document.getElementById('save-key');
+
+  // Load saved position or use default
+  await loadTrackerPosition();
 
   // Set up event listeners
   saveKeyButton.addEventListener('click', async function() {
@@ -35,13 +40,22 @@ document.addEventListener('DOMContentLoaded', async function() {
       await chrome.storage.sync.set({ geminiApiKey: apiKey });
       apiKeySection.style.display = 'none';
       contentSection.style.display = 'block';
-      await initializeContent();
+      await loadTrackerPosition();
+      await updateDisplay();
     }
   });
 
   nextButton.addEventListener('click', async function() {
-    // TODO: Implement next passage functionality
-    console.log('Next passage clicked');
+    // Update display with current passage and get next passage info
+    await updateDisplay();
+  });
+
+  restartButton.addEventListener('click', async function() {
+    // Reset to Book I, Text I
+    tracker.book = 1;
+    tracker.text = 1;
+    await saveTrackerPosition();
+    await updateDisplay();
   });
 
   // Check if API key exists
@@ -49,17 +63,13 @@ document.addEventListener('DOMContentLoaded', async function() {
   if (result.geminiApiKey) {
     apiKeySection.style.display = 'none';
     contentSection.style.display = 'block';
-    await initializeContent();
+    await loadTrackerPosition();
+    await updateDisplay();
   }
-});
 
-// Initialize content after API key is set
-async function initializeContent() {
-  // Load saved position or use default
-  await loadTrackerPosition();
   // Display current position
-  await updateDisplay();
-}
+  updateDisplay();
+});
 
 // Load tracker position from storage
 async function loadTrackerPosition() {
@@ -83,12 +93,37 @@ async function saveTrackerPosition() {
 
 // Update the display with current position
 async function updateDisplay() {
-  // Show current position in passage box
-  referenceText.textContent = `Book ${tracker.book}, Text ${tracker.text}`;
+  // Show current position in passage box with Roman numerals
+  referenceText.textContent = `Book ${toRoman(tracker.book)}, Text ${toRoman(tracker.text)}`;
   passageContent.textContent = "Loading passage...";
   
   // Get AI interpretation
   await getAIInterpretation();
+}
+
+// Convert number to Roman numeral
+function toRoman(num) {
+  const romanNumerals = [
+    { value: 50, numeral: 'L' },
+    { value: 40, numeral: 'XL' },
+    { value: 10, numeral: 'X' },
+    { value: 9, numeral: 'IX' },
+    { value: 5, numeral: 'V' },
+    { value: 4, numeral: 'IV' },
+    { value: 1, numeral: 'I' }
+  ];
+  
+  let result = '';
+  let remaining = num;
+  
+  for (const { value, numeral } of romanNumerals) {
+    while (remaining >= value) {
+      result += numeral;
+      remaining -= value;
+    }
+  }
+  
+  return result;
 }
 
 // Get AI interpretation using Gemini
@@ -98,24 +133,27 @@ async function getAIInterpretation() {
     if (!result.geminiApiKey) {
       interpretationContent.textContent = "Please set your Gemini API key";
       exerciseContent.textContent = "";
-      apiKeySection.style.display = 'block';
-      contentSection.style.display = 'none';
       return;
     }
 
     const apiKey = result.geminiApiKey;
     const prompt = `
-      You are an expert in Stoic philosophy. For Book ${tracker.book}, Text ${tracker.text} of Marcus Aurelius's Meditations:
+      You are an expert in Stoic philosophy. For Book ${toRoman(tracker.book)}, Text ${toRoman(tracker.text)} of Marcus Aurelius's Meditations:
 
       1. Original Text from the book
       2. Provide a brief modern interpretation (2-3 sentences)
       3. Suggest a practical daily exercise based on this teaching (1 sentence)
+      4. Determine the next passage's book and text number. If current text is the last in its book, move to text 1 of next book. If it's the last text of Book XII, return to Book I, Text I.
 
       Respond with ONLY a JSON object in this exact format (no markdown, no other text):
       {
         "originalText": "your original text here",
         "interpretation": "your interpretation here",
-        "exercise": "your exercise here"
+        "exercise": "your exercise here",
+        "nextPassage": {
+          "book": number,
+          "text": number
+        }
       }`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
@@ -159,6 +197,12 @@ async function getAIInterpretation() {
     interpretationContent.textContent = aiResponse.interpretation;
     exerciseContent.textContent = aiResponse.exercise;
 
+    // Store next passage info
+    if (aiResponse.nextPassage) {
+      tracker.book = aiResponse.nextPassage.book;
+      tracker.text = aiResponse.nextPassage.text;
+    }
+
     // Save tracker position
     await saveTrackerPosition();
   } catch (error) {
@@ -166,4 +210,9 @@ async function getAIInterpretation() {
     interpretationContent.textContent = "Error getting AI interpretation";
     exerciseContent.textContent = "Please try again";
   }
+}
+
+// Added function to await instructions
+async function instructions() {
+  console.log('Awaiting instructions');
 }
