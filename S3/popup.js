@@ -1,87 +1,124 @@
-// Meditations quotes
-const quotes = [
-  {
-    text: "Accept the things to which fate binds you, and love the people with whom fate brings you together, but do so with all your heart.",
-    book: "Book IV"
-  },
-  {
-    text: "The best revenge is to be unlike him who performed the injury.",
-    book: "Book VI"
-  },
-  {
-    text: "Waste no more time arguing about what a good man should be. Be one.",
-    book: "Book X"
-  },
-  {
-    text: "Very little is needed to make a happy life; it is all within yourself, in your way of thinking.",
-    book: "Book VII"
-  },
-  {
-    text: "When you arise in the morning, think of what a precious privilege it is to be alive - to breathe, to think, to enjoy, to love.",
-    book: "Book II"
-  }
-];
+// DOM Elements
+let passageContent;
+let referenceText;
+let interpretationContent;
+let exerciseContent;
+let nextButton;
+let apiKeySection;
+let contentSection;
+let apiKeyInput;
+let saveKeyButton;
 
-// Get DOM elements
-const quoteElement = document.getElementById('quote');
-const referenceElement = document.getElementById('book-reference');
-const newQuoteButton = document.getElementById('new-quote');
-const interpretationElement = document.getElementById('interpretation');
-const dailyActionElement = document.getElementById('daily-action');
-const apiKeyInput = document.getElementById('api-key');
-const saveKeyButton = document.getElementById('save-key');
-const apiKeySection = document.getElementById('api-key-section');
+// Tracker object to keep track of current position
+const tracker = {
+  book: 1,
+  text: 1
+};
 
-// Check for stored API key
-chrome.storage.sync.get(['geminiApiKey'], function(result) {
-  console.log('Checking for stored API key:', result.geminiApiKey ? 'Found' : 'Not found');
+// Initialize
+document.addEventListener('DOMContentLoaded', async function() {
+  // Initialize DOM elements
+  passageContent = document.getElementById('passage-content');
+  referenceText = document.getElementById('reference');
+  interpretationContent = document.getElementById('interpretation-content');
+  exerciseContent = document.getElementById('exercise-content');
+  nextButton = document.getElementById('next-button');
+  apiKeySection = document.getElementById('api-key-section');
+  contentSection = document.getElementById('content-section');
+  apiKeyInput = document.getElementById('api-key');
+  saveKeyButton = document.getElementById('save-key');
+
+  // Set up event listeners
+  saveKeyButton.addEventListener('click', async function() {
+    const apiKey = apiKeyInput.value.trim();
+    if (apiKey) {
+      await chrome.storage.sync.set({ geminiApiKey: apiKey });
+      apiKeySection.style.display = 'none';
+      contentSection.style.display = 'block';
+      await initializeContent();
+    }
+  });
+
+  nextButton.addEventListener('click', async function() {
+    // TODO: Implement next passage functionality
+    console.log('Next passage clicked');
+  });
+
+  // Check if API key exists
+  const result = await chrome.storage.sync.get(['geminiApiKey']);
   if (result.geminiApiKey) {
     apiKeySection.style.display = 'none';
+    contentSection.style.display = 'block';
+    await initializeContent();
   }
 });
 
-// Save API key
-saveKeyButton.addEventListener('click', function() {
-  const apiKey = apiKeyInput.value.trim();
-  if (apiKey) {
-    chrome.storage.sync.set({ geminiApiKey: apiKey }, function() {
-      console.log('API key saved successfully');
-      apiKeySection.style.display = 'none';
-      displayRandomQuote(); // Refresh quote with interpretation
-    });
-  }
-});
+// Initialize content after API key is set
+async function initializeContent() {
+  // Load saved position or use default
+  await loadTrackerPosition();
+  // Display current position
+  await updateDisplay();
+}
 
-// Function to get AI interpretation
-async function getAIInterpretation(quote) {
+// Load tracker position from storage
+async function loadTrackerPosition() {
+  const result = await chrome.storage.sync.get(['trackerPosition']);
+  if (result.trackerPosition) {
+    tracker.book = result.trackerPosition.book;
+    tracker.text = result.trackerPosition.text;
+  }
+  // If no saved position, it will use the default (Book 1, Text 1)
+}
+
+// Save tracker position to storage
+async function saveTrackerPosition() {
+  await chrome.storage.sync.set({
+    trackerPosition: {
+      book: tracker.book,
+      text: tracker.text
+    }
+  });
+}
+
+// Update the display with current position
+async function updateDisplay() {
+  // Show current position in passage box
+  referenceText.textContent = `Book ${tracker.book}, Text ${tracker.text}`;
+  passageContent.textContent = "Loading passage...";
+  
+  // Get AI interpretation
+  await getAIInterpretation();
+}
+
+// Get AI interpretation using Gemini
+async function getAIInterpretation() {
   try {
-    const storageResult = await chrome.storage.sync.get(['geminiApiKey']);
-    console.log('Retrieved API key for interpretation:', storageResult.geminiApiKey ? 'Present' : 'Missing');
-    
-    if (!storageResult.geminiApiKey) {
-      interpretationElement.textContent = 'Please enter your Gemini API key to get AI interpretations.';
-      dailyActionElement.textContent = '';
-      apiKeySection.style.display = 'flex';
+    const result = await chrome.storage.sync.get(['geminiApiKey']);
+    if (!result.geminiApiKey) {
+      interpretationContent.textContent = "Please set your Gemini API key";
+      exerciseContent.textContent = "";
+      apiKeySection.style.display = 'block';
+      contentSection.style.display = 'none';
       return;
     }
 
-    const apiKey = storageResult.geminiApiKey;
+    const apiKey = result.geminiApiKey;
     const prompt = `
-      Analyze this quote from Marcus Aurelius's Meditations:
-      "${quote.text}"
-      
-      Provide two things:
-      1. A brief modern interpretation (2-3 sentences)
-      2. A simple, concrete action for today based on this teaching (1 sentence)
-      
-      Respond with ONLY a JSON object in this exact format (no markdown, no backticks):
-      {
-        "interpretation": "your interpretation here",
-        "action": "your suggested action here"
-      }
-    `;
+      You are an expert in Stoic philosophy. For Book ${tracker.book}, Text ${tracker.text} of Marcus Aurelius's Meditations:
 
-    const apiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+      1. Original Text from the book
+      2. Provide a brief modern interpretation (2-3 sentences)
+      3. Suggest a practical daily exercise based on this teaching (1 sentence)
+
+      Respond with ONLY a JSON object in this exact format (no markdown, no other text):
+      {
+        "originalText": "your original text here",
+        "interpretation": "your interpretation here",
+        "exercise": "your exercise here"
+      }`;
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -96,59 +133,37 @@ async function getAIInterpretation(quote) {
         }],
         generationConfig: {
           temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
           maxOutputTokens: 1024
         }
       })
     });
 
-    if (!apiResponse.ok) {
-      const errorText = await apiResponse.text();
-      console.error('API Error:', errorText);
-      throw new Error(`API request failed: ${errorText || 'Unknown error'}`);
+    if (!response.ok) {
+      throw new Error('API request failed');
     }
 
-    const data = await apiResponse.json();
-    console.log('API Response:', data);
-    
+    const data = await response.json();
     if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
-      throw new Error('Invalid response format from API');
+      throw new Error('Invalid API response format');
     }
-    
-    try {
-      // Clean up the response text by removing markdown formatting
-      let responseText = data.candidates[0].content.parts[0].text;
-      responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      console.log('Cleaned response:', responseText);
-      
-      const aiResponse = JSON.parse(responseText);
-      interpretationElement.textContent = aiResponse.interpretation;
-      dailyActionElement.textContent = aiResponse.action;
-    } catch (parseError) {
-      console.error('Error parsing AI response:', parseError);
-      console.error('Raw response:', data.candidates[0].content.parts[0].text);
-      throw new Error('Invalid JSON response from AI');
+
+    // Extract JSON from markdown response
+    const responseText = data.candidates[0].content.parts[0].text;
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('No JSON found in response');
     }
+
+    const aiResponse = JSON.parse(jsonMatch[0]);
+    passageContent.textContent = aiResponse.originalText;
+    interpretationContent.textContent = aiResponse.interpretation;
+    exerciseContent.textContent = aiResponse.exercise;
+
+    // Save tracker position
+    await saveTrackerPosition();
   } catch (error) {
-    interpretationElement.textContent = 'Error getting AI interpretation. Please check your API key.';
-    dailyActionElement.textContent = '';
-    apiKeySection.style.display = 'flex';
+    console.error('Error getting AI interpretation:', error);
+    interpretationContent.textContent = "Error getting AI interpretation";
+    exerciseContent.textContent = "Please try again";
   }
 }
-
-// Function to display a random quote
-function displayRandomQuote() {
-  const randomIndex = Math.floor(Math.random() * quotes.length);
-  const quote = quotes[randomIndex];
-  
-  quoteElement.textContent = quote.text;
-  referenceElement.textContent = quote.book;
-  
-  // Get AI interpretation for the quote
-  getAIInterpretation(quote);
-}
-
-// Event listeners
-document.addEventListener('DOMContentLoaded', displayRandomQuote);
-newQuoteButton.addEventListener('click', displayRandomQuote);

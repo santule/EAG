@@ -2,27 +2,42 @@
 <html>
 <head>
   <title>Stoic Mentor</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
   <div class="container">
     <h1>Stoic Mentor</h1>
-    <div class="quote-container">
-      <blockquote id="quote"></blockquote>
-      <p id="book-reference" class="reference"></p>
+    
+    <div id="api-key-section" class="box">
+      <h2>Welcome to Stoic Mentor</h2>
+      <p class="setup-text">To get started, please enter your Gemini API key:</p>
+      <div class="input-group">
+        <input type="password" id="api-key" placeholder="Enter your Gemini API key">
+        <button id="save-key">Start</button>
+      </div>
     </div>
-    <div class="interpretation-container">
-      <h2>Modern Interpretation</h2>
-      <p id="interpretation" class="interpretation"></p>
-      <h2>Today's Action</h2>
-      <p id="daily-action" class="daily-action"></p>
+    
+    <div id="content-section" style="display: none;">
+      <div class="box" id="passage-box">
+        <h2>Passage</h2>
+        <div id="passage-content"></div>
+        <p id="reference" class="reference"></p>
+      </div>
+      
+      <div class="box" id="interpretation-box">
+        <h2>Modern Interpretation</h2>
+        <div id="interpretation-content"></div>
+      </div>
+      
+      <div class="box" id="exercise-box">
+        <h2>Daily Exercise</h2>
+        <div id="exercise-content"></div>
+      </div>
+      
+      <button id="next-button">Next Passage</button>
     </div>
-    <div class="api-key-container" id="api-key-section">
-      <input type="password" id="api-key" placeholder="Enter Gemini API Key">
-      <button id="save-key" class="button">Save Key</button>
-    </div>
-    <button id="new-quote" class="button">New Quote</button>
   </div>
+  
   <script src="popup.js"></script>
 </body>
 </html>
