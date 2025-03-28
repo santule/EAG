@@ -2,8 +2,14 @@
   "manifest_version": 3,
   "name": "Stoic Mentor",
   "version": "1.0",
-  "description": "Daily wisdom from Marcus Aurelius's Meditations",
-  "permissions": ["activeTab", "storage"],
+  "description": "Daily wisdom from Marcus Aurelius's Meditations with AI-powered interpretations",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/"
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

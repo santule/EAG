@@ -17,12 +17,20 @@ h1 {
   font-weight: normal;
 }
 
-.quote-container {
+h2 {
+  font-size: 16px;
+  color: #2c3e50;
+  margin: 15px 0 10px;
+  font-weight: normal;
+}
+
+.quote-container, .interpretation-container {
   background-color: white;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin-bottom: 20px;
+  text-align: left;
 }
 
 blockquote {
@@ -37,6 +45,28 @@ blockquote {
   font-size: 14px;
   color: #7f8c8d;
   margin: 0;
+}
+
+.interpretation, .daily-action {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #34495e;
+  margin: 0 0 15px 0;
+}
+
+.api-key-container {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+#api-key {
+  padding: 8px;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  width: 200px;
+  font-size: 14px;
 }
 
 .button {
