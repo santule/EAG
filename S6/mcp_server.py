@@ -151,43 +151,46 @@ def fibonacci_numbers(n: int) -> list:
 
 
 @mcp.tool()
-async def write_to_keynote(note_for_keynote: str) -> dict:
-    """Open Apple Keynote and then write in the Keynote """
+async def write_to_keynote(note_for_keynote: str, color: str) -> dict:
+    """Open Apple Keynote and then write in the Keynote with colored text."""
+    # Color mapping from name to AppleScript RGB values (0-65535 scale)
+    COLOR_MAP = {
+        "red": "{65535, 0, 0}",
+        "green": "{0, 65535, 0}",
+        "blue": "{0, 0, 65535}",
+        "black": "{0, 0, 0}",
+        "white": "{65535, 65535, 65535}",
+        "yellow": "{65535, 65535, 0}",
+        "purple": "{32768, 0, 32768}",
+        "orange": "{65535, 32768, 0}",
+        "gray": "{32768, 32768, 32768}",
+    }
     try:
-        # AppleScript command to open Keynote
+        color_value = COLOR_MAP.get(color.lower(), "{0, 0, 0}")  # Default to black if not found
         applescript = f'''
             tell application "Keynote"
                 activate
-                
-                -- Create a new document if none is open
                 if (count of documents) = 0 then
                     set newDoc to make new document
                 else
                     set newDoc to front document
                 end if
-
-                -- Add a new slide (let Keynote choose the default layout)
                 tell newDoc
                     set newSlide to make new slide at end of slides
-
-                    -- Add text to the default title and body placeholders
                     tell newSlide
-
                         set newRectangle to make new shape
                         tell newRectangle 
-                            set position to {600, 500}
+                            set position to {{600, 500}}
                             set width to 300
                             set height to 200
                             set object text to "{note_for_keynote}"
+                            set color of object text to {color_value}
                         end tell
                     end tell
                 end tell
             end tell
             '''
-
-        # Run the AppleScript using subprocess
         subprocess.run(["osascript", "-e", applescript])
-    
         return {
             "content": [
                 TextContent(
@@ -205,6 +208,7 @@ async def write_to_keynote(note_for_keynote: str) -> dict:
                 )
             ]
         }
+
 # DEFINE RESOURCES
 
 # Add a dynamic greeting resource

@@ -8,7 +8,8 @@ from concurrent.futures import TimeoutError
 from percieve import extract_facts, PerceptionInput
 from decision import decide,DecisionInput
 from act import act,ActInput
-    
+from memory import memory,MemoryInput,MemoryOutput
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -22,29 +23,6 @@ last_response = None
 iteration = 0
 iteration_response = []
 
-async def generate_with_timeout(client, prompt, timeout=10):
-    """Generate content with a timeout"""
-    print("Starting LLM generation...")
-    try:
-        # Convert the synchronous generate_content call to run in a thread
-        loop = asyncio.get_event_loop()
-        response = await asyncio.wait_for(
-            loop.run_in_executor(
-                None, 
-                lambda: model.generate_content(
-                    contents=prompt
-                )
-            ),
-            timeout=timeout
-        )
-        print("LLM generation completed")
-        return response
-    except TimeoutError:
-        print("LLM generation timed out!")
-        raise
-    except Exception as e:
-        print(f"Error in LLM generation: {e}")
-        raise
 
 def reset_state():
     """Reset all global variables to their initial state"""
@@ -115,27 +93,36 @@ async def main():
                 
                 # Use global iteration variables
                 global iteration, last_response
+                memory_objects = []
                 while iteration < max_iterations:
                     print(f"\n--- Iteration {iteration + 1} ---")
+                    memory_str = "\n".join(m.summary for m in memory_objects) if memory_objects else None
 
                     print("*********DECIDE*********")
-                    decision = await decide(DecisionInput(tools_description=tools_description, facts=facts.model_dump_json()))
+                    decision = await decide(DecisionInput(tools_description=tools_description, facts=facts.model_dump_json(), memory=memory_str))
                     print(decision)
                     
+                    # if decision function is none, exit
+                    if decision.function_name is None or decision.function_name == "None":
+                        break
                     print("*********ACT*********")
                     actionresult = await act(ActInput(session=session, function_name=decision.function_name, arguments=decision.arguments))
-                    print(actionresult)    
-                        
-                    break
+                    print(actionresult)  
                     
+                    memory_output = await memory(MemoryInput(iteration=iteration, function_name=decision.function_name, arguments=decision.arguments, result=actionresult.result))
+                    memory_objects.append(memory_output)
+
+                    last_response = actionresult.result
+                    iteration += 1
+                      
+           
     except Exception as e:
         print(f"Error in main execution: {e}")
         import traceback
         traceback.print_exc()
     finally:
+        print(f"*********COMPLETE*********") 
         reset_state()  # Reset at the end of main
 
 if __name__ == "__main__":
     asyncio.run(main())
-    
-    
