@@ -29,6 +29,7 @@ class PerceptionResult(BaseModel):
     intent: Optional[str]
     questions: int
     difficulty: str
+    write_to_application: Optional[str] = None
     tool_hint: Optional[str] = None
 
 
@@ -44,6 +45,7 @@ Return the response as a Python dictionary with keys:
 - intent: (brief phrase about what the user wants)
 - questions: number of questions user wants to generate
 - difficulty: difficulty level of the questions (easy, medium, hard)
+- write_to_application: (name of the application to write to, if any). If no application to write to then return "None".
 - tool_hint: (name of the MCP tool that might be useful, if any). If no tool hint then return "None".
 
 Output only the dictionary on a single line. Do NOT wrap it in ```json or other formatting.

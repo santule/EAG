@@ -32,23 +32,47 @@ def generate_plan(
 
     prompt = f"""
 
-You are a reasoning-driven AI agent generating Multiple Choice Questions with access to tools. Your job is to solve the user's request step-by-step by reasoning through the problem, selecting a tool if needed, and continuing until the FINAL_ANSWER is produced.{tool_context}
+You are a reasoning-driven AI agent generating Multiple Choice Questions with access to tools. 
+Your job is to solve the user's request step-by-step by reasoning through the problem, selecting a tool if needed, 
+and continuing until the FINAL_ANSWER is produced.{tool_context}
 
-You will create {perception.questions} multiple-choice questions (MCQs) based on the content available to you via knowledge base.
+You will create {perception.questions} multiple-choice questions (MCQs) based on the content available to you 
+via knowledge base by randomly selecting one from available topics and write the mcqs to {perception.write_to_application}.
 
 Instructions:
 Each MCQ should have 1 correct answer and 3 plausible but incorrect distractors.
 
-Clearly mark the correct answer.
-Keep the questions clear and concise.
-Provide the answer key at the end.
+1. Clearly mark the correct answer.
+2. Vary the difficulty: easy to hard.
+3. Keep the questions clear and concise.
+4. Provide the answer key at the end.
+5. **Correct Answer:** You have already provided the correct answer, which you should not repeat.
+6. **Plausibility:** The incorrect answer should be realistic and convincing, mirroring the correct answer in length and format.
+7. **Uniqueness:** Ensure your response is unique compared to previous incorrect answers provided.
+8. **Structure:** Follow the format and complexity of the correct answer to maintain consistency. The answer should be short and concise.
+9. Provide a short explanation after the answer.
+
+Examples of good incorrect, but realistic answcers you should give as a response:
+- If the question is "What is the purpose of early stopping in training machine learning models?", an appropriate incorrect, but realistic answer would be 
+"Early stopping improves model performance by continuing training until the model achieves 100% accuracy on the training set." 
+because it is false, but also a realistic answer for this question.
+
+- If the question is "What is transfer learning?", an appropriate incorrect, but realistic answer would be 
+"Transfer learning trains multiple models in parallel and transfers the best-performing weights to a final ensemble."
+because it is false, but also a realistic answer for this question.
+
 Example format:
-Q1. Question?
-(A) OptionA
-(B) OptionB
-(C) OptionC
-(D) OptionD
-Answer: (Correct option letter)
+Q1. In machine learning, what does the bias-variance tradeoff refer to?
+
+(A) The balance between a model's accuracy and its training time
+(B) The conflict between underfitting and overfitting in model performance
+(C) The tradeoff between model interpretability and scalability
+(D) The choice between supervised and unsupervised learning techniques
+
+Answer: (B)
+Explaination: The bias-variance tradeoff describes how models with high bias tend to underfit the data (too simple),
+while models with high variance tend to overfit (too complex). A good model finds a balance between the two for optimal generalization.
+
 Number of Questions: {perception.questions}
 Difficulty: {perception.difficulty}
 
@@ -57,6 +81,7 @@ Always follow this loop:
 1. Think step-by-step about the problem.
 2. If a tool is needed, respond using the format:
    FUNCTION_CALL: tool_name|param1=value1|param2=value2
+   if the function call does not have any parameters then just use FUNCTION_CALL: tool_name
 3. When the final answer is known, respond using:
    FINAL_ANSWER: [your final result]
 
@@ -81,24 +106,8 @@ Input Summary:
 - FINAL_ANSWER: [42]
 
 ✅ Examples:
-- User asks: "Lets practice 2 easy questions."
-- Task: Create 2 multiple-choice questions (MCQs) based on the content available to you in the knowledge base with difficulty level easy.
-
-Instructions:
-Each MCQ should have 1 correct answer and 3 plausible but incorrect distractors.
-Clearly mark the correct answer.
-Vary the difficulty: easy to medium.
-Keep the questions clear and concise.
-Provide the answer key at the end.
-
-Example format:
-Q1. What is the main pigment used in photosynthesis?
-(A) Chlorophyll
-(B) Hemoglobin
-(C) Melanin
-(D) Keratin
-
-Answer: (A)
+- User asks: "Lets practice 2 easy questions in keynote."
+- Task: Create 2 multiple-choice questions (MCQs) based on the content available to you in the knowledge base with difficulty level easy and provide explaination and write all mcqs to the keynote.
 
 IMPORTANT:
 - 🚫 Do NOT invent tools. Use only the tools listed below.
@@ -121,8 +130,10 @@ IMPORTANT:
         log("plan", f"LLM output: {raw}")
 
         for line in raw.splitlines():
-            if line.strip().startswith("FUNCTION_CALL:") or line.strip().startswith("FINAL_ANSWER:"):
+            if line.strip().startswith("FUNCTION_CALL:"):
                 return line.strip()
+            elif line.strip().startswith("FINAL_ANSWER:"):
+                return raw
 
         return raw.strip()
 

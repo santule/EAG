@@ -17,7 +17,7 @@ def log(stage: str, msg: str):
     now = datetime.datetime.now().strftime("%H:%M:%S")
     print(f"[{now}] [{stage}] {msg}")
 
-max_steps = 3
+max_steps = 4
 
 async def main(user_input: str):
     try:

@@ -151,7 +151,7 @@ def fibonacci_numbers(n: int) -> list:
 
 
 @mcp.tool()
-async def write_to_keynote(note_for_keynote: str) -> dict:
+async def write_to_keynote(input: str) -> dict:
     """Open Apple Keynote and then write in the Keynote """
     try:
         # AppleScript command to open Keynote

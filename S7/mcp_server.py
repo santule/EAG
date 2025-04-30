@@ -3,6 +3,7 @@ from mcp.server.fastmcp.prompts import base
 from mcp.types import TextContent
 from mcp import types
 from PIL import Image as PILImage
+import subprocess
 import math
 import sys
 import os
@@ -17,7 +18,7 @@ from models import AddInput, AddOutput, SqrtInput, SqrtOutput, StringsToIntsInpu
 from PIL import Image as PILImage
 from tqdm import tqdm
 import hashlib, random
-
+from typing import Union, List
 
 mcp = FastMCP("Calculator")
 
@@ -43,15 +44,15 @@ def mcp_log(level: str, message: str) -> None:
     sys.stderr.flush()
 
 @mcp.tool()
-def search_documents(query: str) -> list[str]:
-    """Search for relevant content from uploaded documents."""
+def get_content_for_mcqs(topic: str) -> list[str]:
+    """Get relevant content from the knowledge base based on the topic for generating mcqs."""
     ensure_faiss_ready()
-    mcp_log("SEARCH", f"Query: {query}")
+    mcp_log("SEARCH", f"Topic: {topic}")
     try:
         index = faiss.read_index(str(ROOT / "faiss_index" / "index.bin"))
         metadata = json.loads((ROOT / "faiss_index" / "metadata.json").read_text())
-        query_vec = get_embedding(query).reshape(1, -1)
-        D, I = index.search(query_vec, k=5)
+        query_vec = get_embedding(topic).reshape(1, -1)
+        D, I = index.search(query_vec, k=10)
         results = []
         for idx in I[0]:
             data = metadata[idx]
@@ -190,21 +191,72 @@ def fibonacci_numbers(n: int) -> list:
     return fib_sequence[:n]
 
 @mcp.tool()
-def get_content_for_generating_mcqs() -> list:
-    """Return the random content from all available documents for generating questions based on the content. """
-    print("CALLED: get_all_available_documents_chunks() -> list:")
-    ROOT = Path('/Users/Shared/projects/EAG/S7')
-    metadata = json.loads((ROOT / "faiss_index" / "metadata.json").read_text())
-    results = []
+def get_topic_for_generating_mcqs() -> str:
+    """Return a random topic from all available topics in topics.jsona."""
+    print("CALLED: get_topic_for_generating_mcqs() -> str:")
+    ROOT = Path(__file__).parent.resolve()
+    topics = json.loads((ROOT / "topics.json").read_text())
 
-    # Randomly select an index
-    idx = random.randint(2, len(metadata) - 3)  
-    random_idx = [idx + offset for offset in (-2, -1, 0, 1, 2)]
+    idx = random.randint(0, len(topics) - 1)
+    return topics[idx]
     
-    for idx in random_idx:
-        data = metadata[idx]
-        results.append(f"{data['chunk']}\n[Source: {data['doc']}, ID: {data['chunk_id']}]")
-    return results
+@mcp.tool()
+def write_to_keynote(mcq_content: str) -> dict:
+    """Open Apple Keynote and then write the mcq content in the Keynote """
+    try:
+        mcq_content_escaped = mcq_content.replace('"', '\"')
+        title_text = "PRACTICE QUESTIONS"
+        title_text_escaped = title_text.replace('"', '\"')
+
+        applescript = f'''
+            tell application "Keynote"
+                activate
+                if (count of documents) = 0 then
+                    set newDoc to make new document
+                else
+                    set newDoc to front document
+                end if
+                tell newDoc
+                    set newSlide to make new slide at end of slides
+                    tell newSlide
+                        set theTitleItem to first text item
+                        set the object text of theTitleItem to "{title_text_escaped}"
+                        set the size of the object text of theTitleItem to 32
+                        set theBodyItem to second text item
+                        set the object text of theBodyItem to "{mcq_content_escaped}"
+                        set the size of the object text of theBodyItem to 16
+                    end tell
+                end tell
+            end tell
+            '''
+        # Run the AppleScript using subprocess
+        subprocess.run(["osascript", "-e", applescript])
+    
+        return {
+            "content": [
+                TextContent(
+                    type="text",
+                    text="Keynote opened successfully and text added successfully."
+                )
+            ]
+        }
+    except Exception as e:
+        return {
+            "content": [
+                TextContent(
+                    type="text",
+                    text=f"Error opening and writing to Keynote: {str(e)}"
+                )
+            ]
+        }
+
+def escape_for_applescript(text: str) -> str:
+    # Escape double quotes and split lines for AppleScript multiline string
+    lines = text.splitlines()
+    # Escape double quotes in each line
+    lines = [line.replace('"', '\"') for line in lines]
+    # Join lines with ' & return & '
+    return ' & return & '.join(f'"{line}"' for line in lines)
 
 # DEFINE RESOURCES
 
@@ -285,6 +337,19 @@ def process_documents():
         mcp_log("SUCCESS", "Saved FAISS index and metadata")
     else:
         mcp_log("WARN", "No new documents or updates to process.")
+
+def mcq_list_to_string(mcq_list):
+    out = []
+    for item in mcq_list:
+        for q, opts in item.items():
+            out.append(q)
+            for option in "ABCD":
+                out.append(f"    ({option}) {opts[option]}")
+            out.append(f"    Answer: ({opts['Answer']})")
+            out.append(f"    Explanation: {opts['Explanation']}")
+            out.append("")  # Blank line between questions
+    return "\n".join(out)
+
 
 def ensure_faiss_ready():
     from pathlib import Path
