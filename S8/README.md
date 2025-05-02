@@ -1,5 +1,9 @@
 # YodaMCQ Telegram Bot
 
+<p align="center">
+  <img src="yodaMCQ.png" alt="YodaMCQ Logo" width="300"/>
+</p>
+
 YodaMCQ is a Telegram bot that allows users to request multiple-choice questions (MCQs) on machine learning topics directly through chat. The bot leverages Retrieval-Augmented Generation (RAG) and Google's Gemini LLM to generate high-quality, contextually relevant MCQs in real time.
 
 ## Features
