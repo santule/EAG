@@ -4,6 +4,8 @@ warnings.filterwarnings("ignore")
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 import subprocess
+import os
+from dotenv import load_dotenv
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Hello! I'm your MCQ bot. Let's Practice.")
@@ -42,7 +44,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(mcq_response[i:i+MAX_MESSAGE_LENGTH])
 
 if __name__ == '__main__':
-    app = ApplicationBuilder().token("7677270015:AAGmQPhnBjVBA7TBPExbyWZEus9G6n58Ta8").build()
+    load_dotenv()
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    app = ApplicationBuilder().token(token).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))  # handles all text except commands
 
