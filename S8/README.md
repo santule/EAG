@@ -1,56 +1,49 @@
 # YodaMCQ Telegram Bot
 
-<p align="center">
-  <img src="yodaMCQ.png" alt="YodaMCQ Logo" width="300"/>
-</p>
 
 YodaMCQ is a Telegram bot that allows users to request multiple-choice questions (MCQs) on machine learning topics directly through chat. The bot leverages Retrieval-Augmented Generation (RAG) and Google's Gemini LLM to generate high-quality, contextually relevant MCQs in real time.
 
-## Features
-- **Telegram Bot Interface**: Interact with YodaMCQ on Telegram to request MCQs on demand.
-- **Generate MCQs**: Automatically create MCQs from a pool of machine learning topics, tailored to difficulty and user intent.
-- **Retrieval-Augmented Generation (RAG)**: Uses document retrieval to ground questions in your own knowledge base.
-- **Google Gemini LLM**: Generates diverse, high-quality questions and explanations.
-- **Presentation Formatting**: Converts MCQ data structures into readable, presentation-ready text.
-- **Agent Integration**: Supports agent-driven workflows for generating and inserting questions in response to user intent.
+## Overview
+This application enables seamless MCQ (Multiple Choice Question) generation and delivery using a combination of a Telegram bot, an SSE (Server-Sent Events) server, and an agent with Retrieval-Augmented Generation (RAG) capabilities. The agent can output MCQs either to a local Apple Keynote presentation or to a Google Sheet.
 
-## Key Scripts & Tools
-- `telegrambot.py`: Main entry point for the YodaMCQ Telegram bot.
-- `mcq_agent.py`: Agent logic for MCQ generation and RAG workflow.
-- `mcp_server.py`: Toolbox for MCQ generation, formatting, and document processing.
-- `topics.json`: List of supported machine learning topics for MCQ generation.
+## Architecture
+- **Telegram Bot**: Users interact with the system by sending requests (e.g., for MCQs) via Telegram. The bot forwards these requests to the SSE server.
+- **SSE Server**: Receives requests from the Telegram bot and broadcasts them to all connected SSE clients.
+- **Agent (SSE Client)**: Listens for incoming requests from the SSE server. Upon receiving a request, the agent:
+  - Uses RAG and Google's Gemini LLM to generate high-quality, contextually relevant MCQs.
+  - Dumps the generated MCQs either into a local Keynote presentation or a Google Sheet, based on user/application intent.
+
+## Features
+- **End-to-End MCQ Generation**: From user request (Telegram) to delivery (Keynote/Google Sheets).
+- **Retrieval-Augmented Generation (RAG)**: Ensures questions are grounded in your knowledge base.
+- **Flexible Output**: MCQs can be written to Apple Keynote (for presentations) or to Google Sheets (for record-keeping/sharing).
+- **SSE Integration**: Real-time, decoupled communication between bot, server, and agent.
+- **Google Gemini LLM**: Generates diverse, high-quality questions and explanations.
 
 ## Usage
-### 1. Start the Telegram Bot
-Run the following command in your terminal:
-
-```bash
-python telegrambot.py
-```
-
-### 2. Interact with YodaMCQ
-- Open Telegram and start a chat with your bot.
-- Request MCQs by sending messages like:
-  - `generate 3 easy questions`
-  - `give me 5 hard MCQs on neural networks`
-- The bot will reply with MCQs and explanations generated using RAG and Gemini LLM.
+1. Start the SSE server (`sse_server.py`).
+2. Run the agent (`agent.py`) to listen for SSE requests.
+3. Use the Telegram bot to send MCQ requests.
+4. The agent will generate MCQs and write them to the target application (Keynote or Google Sheets).
 
 ## Requirements
-- Python 3.8+
-- [python-telegram-bot](https://python-telegram-bot.org/)
-- Google Gemini API access
-- Other dependencies as listed in `requirements.txt`
+- Python 3.10+
+- Flask, gspread, oauth2client, sseclient, Gemini LLM access, and other dependencies (see `pyproject.toml`)
+- Google Sheets API credentials (for Sheets integration)
+- Apple Keynote (for Keynote integration)
 
-## Notes
-- Ensure your Gemini API key is configured properly for LLM access.
-- The bot can be extended to support more topics, answer formats, or integrations.
+## Project Structure
+- `agent.py` — Agent logic, SSE client, MCQ generation, output handling
+- `mcp_server.py` — Tool definitions, Google Sheets/Keynote integration
+- `sse_server.py` — SSE server
+- `telegrambot.py` — Telegram bot logic
+- `models.py` — Pydantic models for MCQs and tool inputs/outputs
+- `decision.py`, `perception.py`, `memory.py` — Core agent logic
 
-## File Structure
-- `telegrambot.py` — Main Telegram bot logic
-- `mcq_agent.py` — Agent interface for MCQ generation and RAG
-- `mcp_server.py` — Toolbox for MCQ generation, formatting, and document processing
-- `topics.json` — List of topics for MCQs
-- `README.md` — This documentation
+## How it Works
+1. **User** sends a request (e.g., "Generate 3 easy MCQs on SVM") via Telegram.
+2. **Telegram Bot** sends the request to the SSE server.
+3. **Agent** (SSE client) receives the request, generates MCQs using RAG and Gemini LLM, and writes the result to Keynote or Google Sheets.
 
 ## Troubleshooting
 - If you see errors, check that your API keys are configured correctly.
