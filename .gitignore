@@ -1,3 +1,5 @@
 .DS_Store
 .env
 gen-lang-client-0931579959-00d30d9b2183.json
+.python-version
+__pycache__
