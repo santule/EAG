@@ -17,11 +17,14 @@ from pathlib import Path
 import requests
 from markitdown import MarkItDown
 import time
-from models import AddInput, AddOutput, SqrtInput, SqrtOutput, StringsToIntsInput, StringsToIntsOutput, ExpSumInput, ExpSumOutput
+from models import MCQS, AddInput, AddOutput, SqrtInput, SqrtOutput, \
+StringsToIntsInput, StringsToIntsOutput, ExpSumInput, ExpSumOutput
 from PIL import Image as PILImage
 from tqdm import tqdm
 import hashlib, random
 from typing import Union, List
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 mcp = FastMCP("Calculator")
 
@@ -253,6 +256,40 @@ def write_to_keynote(mcq_content: str) -> dict:
             ]
         }
 
+@mcp.tool()
+def write_to_google_sheet(mcq_content: List[MCQS]) -> dict:
+    """Write the mcq content which is sent in the mcq_content= variable to Google Sheet."""
+
+    print("CALLED: write_to_google_sheet(mcq_content: List[MCQS]) -> dict:")
+    try:
+        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        creds = ServiceAccountCredentials.from_json_keyfile_name("gen-lang-client-0931579959-00d30d9b2183.json", scope)
+        client = gspread.authorize(creds)
+        sheet = client.open("mcqs_sheet").sheet1
+
+        # Insert the MCQs as a new row (in column A)
+        sheet.append_row([mcqs_to_string(mcq_content)])
+
+        return {
+            "content": [
+                "MCQs written to Google Sheet!"
+            ]
+        }
+    except Exception as e:
+        print(f"Error writing to Google Sheet: {e}")
+        return {
+            "content": [
+                f"Error writing to Google Sheet: {e}"
+            ]
+        }
+
+
+def mcqs_to_string(mcq_list: List[MCQS]) -> str:
+    return "\n\n".join(
+        f"Q: {mcq.Question}\nA: {mcq.A}\nB: {mcq.B}\nC: {mcq.C}\nD: {mcq.D}\nAnswer: {mcq.Answer}\nExplanation: {mcq.Explanation}"
+        for mcq in mcq_list
+    )
+
 def escape_for_applescript(text: str) -> str:
     # Escape double quotes and split lines for AppleScript multiline string
     lines = text.splitlines()
@@ -260,7 +297,6 @@ def escape_for_applescript(text: str) -> str:
     lines = [line.replace('"', '\"') for line in lines]
     # Join lines with ' & return & '
     return ' & return & '.join(f'"{line}"' for line in lines)
-
 # DEFINE RESOURCES
 
 # Add a dynamic greeting resource

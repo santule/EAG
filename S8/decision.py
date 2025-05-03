@@ -41,6 +41,7 @@ and continuing until the FINAL_ANSWER is produced.{tool_context}
 
 You will create {perception.questions} multiple-choice questions (MCQs) based on the content available to you 
 via knowledge base by randomly selecting one from available topics and write the mcqs to {perception.write_to_application}.
+Once you have written the mcqs to the {perception.write_to_application}, you are done and can return the final answer FINAL_ANSWER: [DONE].
 
 Instructions:
 Each MCQ should have 1 correct answer and 3 plausible but incorrect distractors.
@@ -65,16 +66,17 @@ because it is false, but also a realistic answer for this question.
 because it is false, but also a realistic answer for this question.
 
 Example format:
-Q1. In machine learning, what does the bias-variance tradeoff refer to?
+[{{"Question": "In machine learning, what does the bias-variance tradeoff refer to?"
 
-(A) The balance between a model's accuracy and its training time
-(B) The conflict between underfitting and overfitting in model performance
-(C) The tradeoff between model interpretability and scalability
-(D) The choice between supervised and unsupervised learning techniques
+"A": "The balance between a model's accuracy and its training time"
+"B": "The conflict between underfitting and overfitting in model performance"
+"C": "The tradeoff between model interpretability and scalability"
+"D": "The choice between supervised and unsupervised learning techniques"
 
-Answer: (B)
-Explaination: The bias-variance tradeoff describes how models with high bias tend to underfit the data (too simple),
-while models with high variance tend to overfit (too complex). A good model finds a balance between the two for optimal generalization.
+"Answer": "B"
+"Explaination": "The bias-variance tradeoff describes how models with high bias tend to underfit the data (too simple),
+while models with high variance tend to overfit (too complex). A good model finds a balance between the two for optimal generalization."
+}}]
 
 Number of Questions: {perception.questions}
 Difficulty: {perception.difficulty}
@@ -107,15 +109,15 @@ Input Summary:
 - FUNCTION_CALL: add|a=5|b=3
 - FUNCTION_CALL: strings_to_chars_to_int|input.string=INDIA
 - FUNCTION_CALL: int_list_to_exponential_sum|input.int_list=[73,78,68,73,65]
-- MCQS: [Q1. Which of the following is NOT a common technique for dimensionality reduction?
+- FUNCTION_CALL: write_to_google_sheet|mcq_content=[{{"Question": "Which of the following is NOT a common technique for dimensionality reduction?"
 
-(A) Principal Component Analysis (PCA)
-(B) Linear Discriminant Analysis (LDA)
-(C) Independent Component Analysis (ICA)
-(D) Support Vector Machine (SVM)
+"A": "Principal Component Analysis (PCA)"
+"B": "Linear Discriminant Analysis (LDA)"
+"C": "Independent Component Analysis (ICA)"
+"D": "Support Vector Machine (SVM)"
 
-Answer: (D)
-Explanation: SVM is a classification and regression technique, not a dimensionality reduction method.]
+"Answer": "D"
+"Explanation": "SVM is a classification and regression technique, not a dimensionality reduction method."}}]
 
 ✅ Examples:
 - User asks: "Lets practice 2 easy questions in keynote."
@@ -130,10 +132,10 @@ IMPORTANT:
 - ❌ Do NOT repeat function calls with the same parameters.
 - ❌ Do NOT output unstructured responses.
 - 🧠 Think before each step. Verify intermediate results mentally before proceeding.
-- 💥 If unsure or no tool fits, skip to MCQS: [unknown]
-- ✅ You have only 3 attempts. Final attempt must be MCQS
+- 💥 If unsure or no tool fits, skip to FINAL_ANSWER: [unknown]
+- ✅ You have only 3 attempts. Final attempt must be FINAL_ANSWER.
 """
-
+    #print(f"prompt, {prompt}")
     try:
         response = model.generate_content(
             contents=prompt
@@ -144,8 +146,8 @@ IMPORTANT:
         for line in raw.splitlines():
             if line.strip().startswith("FUNCTION_CALL:"):
                 return line.strip()
-            elif line.strip().startswith("MCQS:"):
-                return raw
+            elif line.strip().startswith("FINAL_ANSWER:"):
+                return line.strip()
 
         return raw.strip()
 

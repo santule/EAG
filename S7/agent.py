@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore")
+
 import asyncio
 import time
 import os
@@ -109,7 +112,7 @@ async def main(user_input: str):
     log("agent", "Agent session complete.")
 
 if __name__ == "__main__":
-    query = input("🧑 PRACTICE AND GROW YOUR KNOWLEDGE. STATE YOUR INTENT. ")
+    query = input(" PRACTICE AND GROW YOUR KNOWLEDGE. STATE YOUR INTENT. ")
     asyncio.run(main(query))
 
 

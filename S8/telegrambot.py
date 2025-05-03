@@ -3,12 +3,12 @@ warnings.filterwarnings("ignore")
 
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
-import subprocess
 import os
 from dotenv import load_dotenv
+import requests
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Hello! I'm your MCQ bot. Let's Practice.")
+    await update.message.reply_text("Hello! I'm your bot. Let's Practice.")
 
 # handle user messages
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -17,31 +17,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     print(f"{user_name} said: {user_text}")  # log to terminal
 
-    # Run agent.py with user_text as input and capture output
+    # Post the user request to the SSE server (one-way)
     try:
-        result = subprocess.run(
-            ["python", "mcq_agent.py"],
-            input=user_text.encode(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            cwd="/Users/Shared/projects/EAG/S8",
-            timeout=120
-        )
-        agent_output = result.stdout.decode(errors="ignore").strip()
-        if not agent_output:
-            agent_output = result.stderr.decode(errors="ignore").strip()
-        response = agent_output if agent_output else "[No output from agent.py]"
+        resp = requests.post("http://127.0.0.1:5000/send", json={"message": user_text})
+        #print(f"[SSE] POST status: {resp.status_code}, response: {resp.text}")
     except Exception as e:
-        response = f"Error running agent.py: {e}"
+        print(f"[SSE] Failed to send message: {e}")
 
-    mcq_response = response.split("MCQS:")[1].strip()
-    # Remove leading/trailing square brackets if present
-    if mcq_response.startswith("[") and mcq_response.endswith("]"):
-        mcq_response = mcq_response[1:-1].strip()
-    # Split and send the response in chunks (Telegram max: 4096 chars)
-    MAX_MESSAGE_LENGTH = 4096
-    for i in range(0, len(mcq_response), MAX_MESSAGE_LENGTH):
-        await update.message.reply_text(mcq_response[i:i+MAX_MESSAGE_LENGTH])
+    # Optionally reply to the user (or remove this if not needed)
+    await update.message.reply_text("Your request has been received!")
 
 if __name__ == '__main__':
     load_dotenv()
