@@ -1,0 +1,73 @@
+[
+  {
+    "timestamp": 1746581024.894907,
+    "type": "run_metadata",
+    "text": "Started new session with input: What is the amount that Anmol singh paid for his DLF apartment via Capbridge? at 2025-05-07T01:23:44.894919",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-05-07T11:23:44.894959",
+      "step": 0
+    }
+  },
+  {
+    "timestamp": 1746581033.300508,
+    "type": "tool_output",
+    "text": "Output of solve_sandbox: {'result': 'FURTHER_PROCESSING_REQUIRED: meta=None content=[TextContent(type=\\'text\\', text=\"infrastructure facility, DLF had engaged Parsons Brinckerhoff for project management consultancy and construction work had been awarded to IL&FS.[17] Controversies In August 2011, a penalty of \u20b96.3 billion (US$74 million) was imposed on DLF by the Competition Commission of India (CCI)[18] after finding DLF guilty of breaching laws regarding the unfair pricing of goods and services. The complaint was lodged against DLF by buyers in its residential projects Belaire & Park Place, located in Gurgaon.[19] In February 2015, the CCI ordered its investigative arm to probe two more projects of DLF in Gurgaon, namely, DLF Regal Gardens[20] and DLF Skycourt.[21][22] DLF land grab case pertains to the alleged illegal acquisition of 50 acres of land in Amipur village, Haryana, back in 2013, during Bhupinder Singh Hooda\\'s tenure as Chief Minister under the Congress government. This matter has led to an investigation by the Central Bureau of Investigation involving Robert Vadra, Bhupinder Singh Hooda, and the DLF, as of around December 2017.[23]\\\\n[Source: dlf.md, ID: dlf_1]\", annotations=None)] isError=False'}",
+    "tool_name": "solve_sandbox",
+    "tool_args": {
+      "plan": "async def solve():\n    # FUNCTION_CALL: 1\n    \"\"\"Search documents to get relevant extracts. Usage: input={\"input\": {\"query\": \"Anmol Singh DLF apartment Capbridge amount paid\"}} result = await mcp.call_tool('search_stored_documents', input)\"\"\"\n    input = {\"input\": {\"query\": \"Anmol Singh DLF apartment Capbridge amount paid\"}}\n    result = await mcp.call_tool('search_stored_documents', input)\n\n    # FURTHER_PROCESSING_REQUIRED\n    return f\"FURTHER_PROCESSING_REQUIRED: {result}\""
+    },
+    "tool_result": {
+      "result": "FURTHER_PROCESSING_REQUIRED: meta=None content=[TextContent(type='text', text=\"infrastructure facility, DLF had engaged Parsons Brinckerhoff for project management consultancy and construction work had been awarded to IL&FS.[17] Controversies In August 2011, a penalty of \u20b96.3 billion (US$74 million) was imposed on DLF by the Competition Commission of India (CCI)[18] after finding DLF guilty of breaching laws regarding the unfair pricing of goods and services. The complaint was lodged against DLF by buyers in its residential projects Belaire & Park Place, located in Gurgaon.[19] In February 2015, the CCI ordered its investigative arm to probe two more projects of DLF in Gurgaon, namely, DLF Regal Gardens[20] and DLF Skycourt.[21][22] DLF land grab case pertains to the alleged illegal acquisition of 50 acres of land in Amipur village, Haryana, back in 2013, during Bhupinder Singh Hooda's tenure as Chief Minister under the Congress government. This matter has led to an investigation by the Central Bureau of Investigation involving Robert Vadra, Bhupinder Singh Hooda, and the DLF, as of around December 2017.[23]\\n[Source: dlf.md, ID: dlf_1]\", annotations=None)] isError=False"
+    },
+    "final_answer": null,
+    "tags": [
+      "sandbox"
+    ],
+    "success": true,
+    "metadata": {}
+  },
+  {
+    "timestamp": 1746581036.519783,
+    "type": "tool_output",
+    "text": "Output of solve_sandbox: {'result': \"FURTHER_PROCESSING_REQUIRED: meta=None content=[TextContent(type='text', text='Jaggi and Puneet Singh Jaggi are / were promoter Directors.|Yes| |8.|Gensol Ventures Private Limited|Part of the promoter group of Gensol|Yes| |9.|Gensol EV Lease Private Limited|Subsidiary(Gensol held 88.21% of the company)|Yes| ***Loan for Rs. 71.41 Crore from IREDA (Serial No. 3 in the Table under Para 24)*** ### 31. The disclosure made by Gensol in its annual report for FY 2023, in respect of this loan is given below: **Image:** (g) Indian Renewable Energy Development Agency Limited (IREDA) Rupee term loan of Rs. 1,43,00,000/- carries interest @ 9.95% p.a. The loan is repayable in 20 quarterly installments plus interest thereon and repayment starting from June 1, 2023 of Rs. 1,78,500/- each for first 4 installments, Rs. 3,57,05,000/- each for next \u201c5-12\u201d installment and Rs. 4,96,31,250/- each for \u201c13-20\u201d installment. The above loan is secured against hypothecation of 400 EV cars. **___________________________________________________________________________ ** **Interim Order in the matter of Gensol Engineering Limited Page 9 of 29** ----- ### 32. On September 30, 2022, Gensol received a disbursement of Rs. 71.39 Crore from IREDA in its \u201c GEL Trust and Retention Account IREDA Limited\u201d (Bank A/c No. 922020025290861) maintained with Axis Bank. On the same day, the Company transferred promoter contribution of Rs. 26.06 Crore from another internal account into the above Trust and Retention Account. The total funds credited in the said account amounted to Rs. 97.46 Crore. 33. On October 03, 2022, Rs. 93.88 Crore was transferred from the Trust and Retention Account to Go-Auto (Bank A/c No. 06792000003065 with HDFC Bank). Prior to this transfer, the balance in the said account of Go-Auto was Rs. 0.79 Crore. It was noted that immediately upon receipt of the said amount, Go- Auto, on the same day, transferred Rs. 50 Crore to Capbridge (Bank A/c No. 920020064107731 with Axis Bank), a disclosed related party of Gensol. The Capbridge account had a balance of Rs. 0.15 Crore prior to this transaction. 34. On October 06, 2022, it was noted that Capbridge transferred Rs. 42.94 Crore to DLF Limited (DLF). As per information provided by DLF (email dated December 17, 2024), the above payment was made towards consideration for the purchase of an apartment in the project The Camellias . The submissions made by DLF Ltd. are summarised below: (a) On September 29, 2022, a sum of Rs. 5 Crore was paid to DLF by Jasminder Kaur, as advance, for booking an apartment in the project The Camellias . (b) On October 06, 2022, Capbridge paid Rs. 42.94 Crore to DLF as part of the consideration for the above apartment booked by Jasminder Kaur. (c) On October 20, 2022, the allotment was formally made to Jasminder Kaur. (d) Thereafter, on request, the allotment was substituted in favour of Capbridge. (e) The advance of Rs. 5 Crore was returned to Jasminder Kaur by DLF on November 21, 2022. 35. A pictorial representation of the above movement of funds is given below: **___________________________________________________________________________ ** **Interim Order in the matter of Gensol Engineering Limited Page 10 of 29** ----- **Image:** GEL TRUST AND RETENTION ACCOUNT IREDALIMITED Rs 93.88 crore 03/10/2022\\\\n[Source: INVG67564.pdf, ID: INVG67564_6]', annotations=None)] isError=False\"}",
+    "tool_name": "solve_sandbox",
+    "tool_args": {
+      "plan": "async def solve():\n    # FUNCTION_CALL: 1\n    \"\"\"Search documents to get relevant extracts. Usage: input={\"input\": {\"query\": \"Anmol Singh DLF apartment Capbridge payment\"}} result = await mcp.call_tool('search_stored_documents', input)\"\"\"\n    input = {\"input\": {\"query\": \"Anmol Singh DLF apartment Capbridge payment\"}}\n    result = await mcp.call_tool('search_stored_documents', input)\n\n    # FURTHER_PROCESSING_REQUIRED\n    return f\"FURTHER_PROCESSING_REQUIRED: {result}\""
+    },
+    "tool_result": {
+      "result": "FURTHER_PROCESSING_REQUIRED: meta=None content=[TextContent(type='text', text='Jaggi and Puneet Singh Jaggi are / were promoter Directors.|Yes| |8.|Gensol Ventures Private Limited|Part of the promoter group of Gensol|Yes| |9.|Gensol EV Lease Private Limited|Subsidiary(Gensol held 88.21% of the company)|Yes| ***Loan for Rs. 71.41 Crore from IREDA (Serial No. 3 in the Table under Para 24)*** ### 31. The disclosure made by Gensol in its annual report for FY 2023, in respect of this loan is given below: **Image:** (g) Indian Renewable Energy Development Agency Limited (IREDA) Rupee term loan of Rs. 1,43,00,000/- carries interest @ 9.95% p.a. The loan is repayable in 20 quarterly installments plus interest thereon and repayment starting from June 1, 2023 of Rs. 1,78,500/- each for first 4 installments, Rs. 3,57,05,000/- each for next \u201c5-12\u201d installment and Rs. 4,96,31,250/- each for \u201c13-20\u201d installment. The above loan is secured against hypothecation of 400 EV cars. **___________________________________________________________________________ ** **Interim Order in the matter of Gensol Engineering Limited Page 9 of 29** ----- ### 32. On September 30, 2022, Gensol received a disbursement of Rs. 71.39 Crore from IREDA in its \u201c GEL Trust and Retention Account IREDA Limited\u201d (Bank A/c No. 922020025290861) maintained with Axis Bank. On the same day, the Company transferred promoter contribution of Rs. 26.06 Crore from another internal account into the above Trust and Retention Account. The total funds credited in the said account amounted to Rs. 97.46 Crore. 33. On October 03, 2022, Rs. 93.88 Crore was transferred from the Trust and Retention Account to Go-Auto (Bank A/c No. 06792000003065 with HDFC Bank). Prior to this transfer, the balance in the said account of Go-Auto was Rs. 0.79 Crore. It was noted that immediately upon receipt of the said amount, Go- Auto, on the same day, transferred Rs. 50 Crore to Capbridge (Bank A/c No. 920020064107731 with Axis Bank), a disclosed related party of Gensol. The Capbridge account had a balance of Rs. 0.15 Crore prior to this transaction. 34. On October 06, 2022, it was noted that Capbridge transferred Rs. 42.94 Crore to DLF Limited (DLF). As per information provided by DLF (email dated December 17, 2024), the above payment was made towards consideration for the purchase of an apartment in the project The Camellias . The submissions made by DLF Ltd. are summarised below: (a) On September 29, 2022, a sum of Rs. 5 Crore was paid to DLF by Jasminder Kaur, as advance, for booking an apartment in the project The Camellias . (b) On October 06, 2022, Capbridge paid Rs. 42.94 Crore to DLF as part of the consideration for the above apartment booked by Jasminder Kaur. (c) On October 20, 2022, the allotment was formally made to Jasminder Kaur. (d) Thereafter, on request, the allotment was substituted in favour of Capbridge. (e) The advance of Rs. 5 Crore was returned to Jasminder Kaur by DLF on November 21, 2022. 35. A pictorial representation of the above movement of funds is given below: **___________________________________________________________________________ ** **Interim Order in the matter of Gensol Engineering Limited Page 10 of 29** ----- **Image:** GEL TRUST AND RETENTION ACCOUNT IREDALIMITED Rs 93.88 crore 03/10/2022\\n[Source: INVG67564.pdf, ID: INVG67564_6]', annotations=None)] isError=False"
+    },
+    "final_answer": null,
+    "tags": [
+      "sandbox"
+    ],
+    "success": true,
+    "metadata": {}
+  },
+  {
+    "timestamp": 1746581039.665192,
+    "type": "tool_output",
+    "text": "Output of solve_sandbox: {'result': 'FURTHER_PROCESSING_REQUIRED: meta=None content=[TextContent(type=\\'text\\', text=\"infrastructure facility, DLF had engaged Parsons Brinckerhoff for project management consultancy and construction work had been awarded to IL&FS.[17] Controversies In August 2011, a penalty of \u20b96.3 billion (US$74 million) was imposed on DLF by the Competition Commission of India (CCI)[18] after finding DLF guilty of breaching laws regarding the unfair pricing of goods and services. The complaint was lodged against DLF by buyers in its residential projects Belaire & Park Place, located in Gurgaon.[19] In February 2015, the CCI ordered its investigative arm to probe two more projects of DLF in Gurgaon, namely, DLF Regal Gardens[20] and DLF Skycourt.[21][22] DLF land grab case pertains to the alleged illegal acquisition of 50 acres of land in Amipur village, Haryana, back in 2013, during Bhupinder Singh Hooda\\'s tenure as Chief Minister under the Congress government. This matter has led to an investigation by the Central Bureau of Investigation involving Robert Vadra, Bhupinder Singh Hooda, and the DLF, as of around December 2017.[23]\\\\n[Source: dlf.md, ID: dlf_1]\", annotations=None)] isError=False'}",
+    "tool_name": "solve_sandbox",
+    "tool_args": {
+      "plan": "async def solve():\n    # FUNCTION_CALL: 1\n    \"\"\"Search documents to get relevant extracts. Usage: input={\"input\": {\"query\": \"DLF apartment Capbridge Anmol Singh\"}} result = await mcp.call_tool('search_stored_documents', input)\"\"\"\n    input = {\"input\": {\"query\": \"DLF apartment Capbridge Anmol Singh\"}}\n    result = await mcp.call_tool('search_stored_documents', input)\n\n    # FURTHER_PROCESSING_REQUIRED\n    return f\"FURTHER_PROCESSING_REQUIRED: {result}\""
+    },
+    "tool_result": {
+      "result": "FURTHER_PROCESSING_REQUIRED: meta=None content=[TextContent(type='text', text=\"infrastructure facility, DLF had engaged Parsons Brinckerhoff for project management consultancy and construction work had been awarded to IL&FS.[17] Controversies In August 2011, a penalty of \u20b96.3 billion (US$74 million) was imposed on DLF by the Competition Commission of India (CCI)[18] after finding DLF guilty of breaching laws regarding the unfair pricing of goods and services. The complaint was lodged against DLF by buyers in its residential projects Belaire & Park Place, located in Gurgaon.[19] In February 2015, the CCI ordered its investigative arm to probe two more projects of DLF in Gurgaon, namely, DLF Regal Gardens[20] and DLF Skycourt.[21][22] DLF land grab case pertains to the alleged illegal acquisition of 50 acres of land in Amipur village, Haryana, back in 2013, during Bhupinder Singh Hooda's tenure as Chief Minister under the Congress government. This matter has led to an investigation by the Central Bureau of Investigation involving Robert Vadra, Bhupinder Singh Hooda, and the DLF, as of around December 2017.[23]\\n[Source: dlf.md, ID: dlf_1]\", annotations=None)] isError=False"
+    },
+    "final_answer": null,
+    "tags": [
+      "sandbox"
+    ],
+    "success": true,
+    "metadata": {}
+  }
+]

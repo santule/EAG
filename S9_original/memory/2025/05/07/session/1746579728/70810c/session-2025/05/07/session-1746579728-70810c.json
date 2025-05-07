@@ -1,0 +1,36 @@
+[
+  {
+    "timestamp": 1746579728.623447,
+    "type": "run_metadata",
+    "text": "Started new session with input: wwhat is the weather in brisbane today? at 2025-05-07T01:02:08.623462",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-05-07T11:02:08.623503",
+      "step": 0
+    }
+  },
+  {
+    "timestamp": 1746579923.525795,
+    "type": "run_metadata",
+    "text": "Started new session with input: clear at 2025-05-07T01:05:23.525799",
+    "tool_name": null,
+    "tool_args": null,
+    "tool_result": null,
+    "final_answer": null,
+    "tags": [
+      "run_start"
+    ],
+    "success": null,
+    "metadata": {
+      "start_time": "2025-05-07T11:05:23.525815",
+      "step": 0
+    }
+  }
+]
