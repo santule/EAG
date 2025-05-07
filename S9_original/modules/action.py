@@ -64,6 +64,7 @@ async def run_python_sandbox(code: str, dispatcher: Any) -> str:
         else:
             result = solve_fn()
 
+       #print("[action] Result:", result)
         # Clean result formatting
         if isinstance(result, dict) and "result" in result:
             return f"{result['result']}"

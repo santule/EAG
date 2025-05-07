@@ -45,6 +45,7 @@ async def generate_plan(
     )
 
     try:
+        print("[decision] Prompt:", prompt)
         raw = (await model.generate_text(prompt)).strip()
         log("plan", f"LLM output: {raw}")
 

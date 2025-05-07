@@ -27,13 +27,13 @@ persona:
 mcp_servers:
   - id: math
     script: mcp_server_1.py
-    cwd: I:/TSAI/2025/EAG/Session 8/S8
+    cwd: /Users/Shared/projects/EAG/S8_original
   - id: documents
     script: mcp_server_2.py
-    cwd: I:/TSAI/2025/EAG/Session 8/S8
+    cwd: /Users/Shared/projects/EAG/S8_original
   - id: websearch
     script: mcp_server_3.py
-    cwd: I:/TSAI/2025/EAG/Session 8/S8
+    cwd: /Users/Shared/projects/EAG/S8_original
 
 
 

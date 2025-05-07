@@ -8,9 +8,14 @@ def clean_text(raw_text):
     raw_text = re.split(r"\*\*Interim Order.*?Page \d+ of \d+\*\*", raw_text)[0]
 
     # Step 2: Replace markup-like artifacts
-    cleaned = raw_text.replace("FURTHER_PROCESSING_REQUIRED:", "") \
+    cleaned = raw_text.replace("meta=None content=[TextContent(type='text', text='", "") \
+                      .replace("Result: ", "") \
+                      .replace("  Result:", "") \
+                      .replace("Result:", "") \
+                      .replace("FURTHER_PROCESSING_REQUIRED:", "") \
                       .replace("meta=None", "") \
                       .replace("TextContent(type='text', text=", "") \
+                      .replace("TextContent(type='text', text=\'{\"result\": ", "") \
                       .replace("annotations=None)", "") \
                       .replace("[Source:", "\n[Source:") \
                       .replace("\\n", "\n")

@@ -3,7 +3,7 @@ from modules.perception import PerceptionResult
 from modules.memory import MemoryItem
 from modules.model_manager import ModelManager
 from dotenv import load_dotenv
-from google import genai
+import google.generativeai as genai
 import os
 import asyncio
 
